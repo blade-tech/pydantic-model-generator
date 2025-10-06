@@ -1,0 +1,26 @@
+{
+  "test_name": "Datetime Validation",
+  "description": "Verify datetime fields accept datetime objects, not arbitrary strings",
+  "test_cases": [
+    {
+      "case": "Valid datetime object",
+      "passed": true,
+      "error": null,
+      "value": "2025-12-31 00:00:00"
+    },
+    {
+      "case": "ISO datetime string (should parse)",
+      "passed": true,
+      "error": null,
+      "value": "2025-10-05 10:30:00"
+    },
+    {
+      "case": "Invalid datetime ('tomorrow')",
+      "passed": true,
+      "error": "Correctly rejected: 1 validation error for BusinessOutcome\ndue_date\n  Input should be a valid datetime or date, input is"
+    }
+  ],
+  "total_cases": 3,
+  "passed_cases": 3,
+  "success": true
+}

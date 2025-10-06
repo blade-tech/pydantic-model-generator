@@ -1,0 +1,27 @@
+{
+  "test_name": "Compliant Murabaha Transaction",
+  "description": "Full SS-08 compliance verification",
+  "test_cases": [
+    {
+      "case": "Create compliant audit outcome",
+      "passed": true,
+      "error": null,
+      "audit": {
+        "node_id": "audit-compliant-001",
+        "audit_status": "compliant",
+        "critical_violations": [],
+        "transaction_id": "TXN-2025-001",
+        "contract_value": 45000.0,
+        "profit_amount": 5000.0
+      }
+    },
+    {
+      "case": "Verify no critical violations",
+      "passed": true,
+      "error": null
+    }
+  ],
+  "total_cases": 2,
+  "passed_cases": 2,
+  "success": true
+}

@@ -1,0 +1,65 @@
+{
+  "docId": "AAOIFI-SS-59-EN-2023",
+  "title": "Shari'ah Standard No. 59: Gold",
+  "issued": "2023-12-15",
+  "sections": [
+    {
+      "id": "AAOIFI-SS-59-EN-2023#S1",
+      "label": "Introduction",
+      "order": 1
+    },
+    {
+      "id": "AAOIFI-SS-59-EN-2023#S4",
+      "label": "Conditions and Controls",
+      "order": 4
+    }
+  ],
+  "paragraphs": [
+    {
+      "id": "AAOIFI-SS-59-EN-2023#P001",
+      "section_id": "AAOIFI-SS-59-EN-2023#S1",
+      "ordinal": 1,
+      "text": "This standard addresses the sale and trading of gold and gold-backed instruments.",
+      "page_from": 3,
+      "page_to": 3
+    },
+    {
+      "id": "AAOIFI-SS-59-EN-2023#P045",
+      "section_id": "AAOIFI-SS-59-EN-2023#S4",
+      "ordinal": 45,
+      "text": "The seller must disclose cost and profit in murabaha transactions involving gold.",
+      "page_from": 27,
+      "page_to": 27
+    },
+    {
+      "id": "AAOIFI-SS-59-EN-2023#P072",
+      "section_id": "AAOIFI-SS-59-EN-2023#S4",
+      "ordinal": 72,
+      "text": "A sale of gold on deferred payment terms is not permitted unless the transaction qualifies as salam or istisna'a.",
+      "page_from": 33,
+      "page_to": 33
+    },
+    {
+      "id": "AAOIFI-SS-59-EN-2023#P073",
+      "section_id": "AAOIFI-SS-59-EN-2023#S4",
+      "ordinal": 73,
+      "text": "The prohibition applies when gold is exchanged for currency or other commodities with deferred payment.",
+      "page_from": 33,
+      "page_to": 33
+    }
+  ],
+  "rules": [
+    {
+      "id": "AAOIFI-SS-59-EN-2023#R001",
+      "title": "Murabaha Disclosure Requirement",
+      "article_no": "4.5",
+      "evidence_paragraph_ids": ["AAOIFI-SS-59-EN-2023#P045"]
+    },
+    {
+      "id": "AAOIFI-SS-59-EN-2023#R002",
+      "title": "Deferred Payment Prohibition",
+      "article_no": "4.12",
+      "evidence_paragraph_ids": ["AAOIFI-SS-59-EN-2023#P072", "AAOIFI-SS-59-EN-2023#P073"]
+    }
+  ]
+}

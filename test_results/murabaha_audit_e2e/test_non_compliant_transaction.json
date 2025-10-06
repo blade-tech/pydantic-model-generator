@@ -1,0 +1,36 @@
+{
+  "test_name": "Non-Compliant Murabaha Transaction",
+  "description": "Critical SS-08 violations detection",
+  "test_cases": [
+    {
+      "case": "Create non-compliant audit outcome",
+      "passed": true,
+      "error": null,
+      "audit": {
+        "node_id": "audit-non-compliant-001",
+        "audit_status": "non_compliant",
+        "critical_violations": [
+          "sale_before_possession",
+          "bilateral_promise",
+          "riba_delay_charge",
+          "riba_commodity"
+        ],
+        "shariah_board_review_required": true
+      }
+    },
+    {
+      "case": "Verify critical violations flagged",
+      "passed": true,
+      "error": null,
+      "violations_detected": [
+        "sale_before_possession",
+        "bilateral_promise",
+        "riba_delay_charge",
+        "riba_commodity"
+      ]
+    }
+  ],
+  "total_cases": 2,
+  "passed_cases": 2,
+  "success": true
+}

@@ -1,0 +1,49 @@
+{
+  "test_name": "Audit Evidence Model",
+  "description": "Evidence documentation and verification",
+  "test_cases": [
+    {
+      "case": "Create evidence: Customer Application",
+      "passed": true,
+      "error": null,
+      "evidence": {
+        "type": "Customer Application",
+        "document_id": "APP-2025-001",
+        "verified": true
+      }
+    },
+    {
+      "case": "Create evidence: Purchase Contract",
+      "passed": true,
+      "error": null,
+      "evidence": {
+        "type": "Purchase Contract",
+        "document_id": "PC-2025-001",
+        "verified": true
+      }
+    },
+    {
+      "case": "Create evidence: Bill of Lading",
+      "passed": true,
+      "error": null,
+      "evidence": {
+        "type": "Bill of Lading",
+        "document_id": "BOL-2025-001",
+        "verified": true
+      }
+    },
+    {
+      "case": "Create evidence: Murabaha Contract",
+      "passed": true,
+      "error": null,
+      "evidence": {
+        "type": "Murabaha Contract",
+        "document_id": "MC-2025-001",
+        "verified": true
+      }
+    }
+  ],
+  "total_cases": 4,
+  "passed_cases": 4,
+  "success": true
+}

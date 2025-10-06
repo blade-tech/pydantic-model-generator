@@ -1,0 +1,38 @@
+{
+  "test_name": "AAOIFI Provenance Tracking",
+  "description": "Verify NodeProv/EdgeProv fields work correctly",
+  "test_cases": [
+    {
+      "case": "Missing node_id (required)",
+      "passed": true,
+      "error": "Correctly rejected: 1 validation error for Document\nnode_id\n  Field required [type=missing, input_value={'entity_type': "
+    },
+    {
+      "case": "Missing entity_type (required)",
+      "passed": true,
+      "error": "Correctly rejected: 1 validation error for Document\nentity_type\n  Field required [type=missing, input_value={'node_id': "
+    },
+    {
+      "case": "All provenance fields populated",
+      "passed": true,
+      "error": null,
+      "provenance": {
+        "node_id": "doc-4",
+        "entity_type": "Document",
+        "prov_system": "aaoifi_ingestion"
+      }
+    },
+    {
+      "case": "Edge provenance (rel_id, relation_type)",
+      "passed": true,
+      "error": null,
+      "edge_provenance": {
+        "rel_id": "rel-1",
+        "relation_type": "Contains"
+      }
+    }
+  ],
+  "total_cases": 4,
+  "passed_cases": 4,
+  "success": true
+}

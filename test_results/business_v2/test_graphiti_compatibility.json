@@ -1,0 +1,30 @@
+{
+  "test_name": "Graphiti Compatibility",
+  "description": "Verify all business fields Optional, only provenance required",
+  "test_cases": [
+    {
+      "case": "Minimal BusinessOutcome (only provenance)",
+      "passed": true,
+      "error": null,
+      "model": {
+        "node_id": "test-node-13",
+        "entity_type": "BusinessOutcome",
+        "status": null,
+        "confidence": null
+      }
+    },
+    {
+      "case": "Minimal Customer (only provenance)",
+      "passed": true,
+      "error": null
+    },
+    {
+      "case": "Minimal Fulfills edge (only provenance)",
+      "passed": true,
+      "error": null
+    }
+  ],
+  "total_cases": 3,
+  "passed_cases": 3,
+  "success": true
+}

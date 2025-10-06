@@ -1,0 +1,38 @@
+{
+  "test_name": "Provenance Tracking",
+  "description": "Verify NodeProv/EdgeProv fields work correctly",
+  "test_cases": [
+    {
+      "case": "Missing node_id (required)",
+      "passed": true,
+      "error": "Correctly rejected: 1 validation error for BusinessOutcome\nnode_id\n  Field required [type=missing, input_value={'entity_"
+    },
+    {
+      "case": "Missing entity_type (required)",
+      "passed": true,
+      "error": "Correctly rejected: 1 validation error for BusinessOutcome\nentity_type\n  Field required [type=missing, input_value={'nod"
+    },
+    {
+      "case": "All provenance fields populated",
+      "passed": true,
+      "error": null,
+      "provenance": {
+        "node_id": "test-node-12",
+        "entity_type": "BusinessOutcome",
+        "prov_system": "test_suite"
+      }
+    },
+    {
+      "case": "Edge provenance (rel_id, relation_type)",
+      "passed": true,
+      "error": null,
+      "edge_provenance": {
+        "rel_id": "test-rel-1",
+        "relation_type": "Requires"
+      }
+    }
+  ],
+  "total_cases": 4,
+  "passed_cases": 4,
+  "success": true
+}
