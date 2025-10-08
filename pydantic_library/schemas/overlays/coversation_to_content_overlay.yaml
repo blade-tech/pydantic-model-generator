@@ -1,0 +1,522 @@
+id: https://example.org/schemas/conversation-task-inference
+name: conversation_task_inference
+description: Schema for inferring and tracking content creation tasks derived from conversations ingested into Neo4j via Graphiti, maintaining full provenance of the inference process
+imports:
+  - ../core/provenance
+prefixes:
+  linkml: https://w3id.org/linkml/
+  doco: http://purl.org/spar/doco/
+  fabio: http://purl.org/spar/fabio/
+  prov: http://www.w3.org/ns/prov#
+  skos: http://www.w3.org/2004/02/skos/core#
+  dcterms: http://purl.org/dc/terms/
+  schema: http://schema.org/
+default_prefix: conversation_task_inference
+
+classes:
+  Conversation:
+    description: Source document or communication ingested via Graphiti into Neo4j
+    class_uri: fabio:Expression
+    mixins:
+      - ProvenanceFields
+    slots:
+      - conversation_id
+      - content
+      - timestamp
+      - source
+      - participants
+      - conversation_type
+      - metadata
+      - derived_tasks
+      - ingested_by
+    slot_usage:
+      conversation_id:
+        identifier: true
+        required: true
+      content:
+        required: true
+      timestamp:
+        required: true
+
+  Task:
+    description: Actionable work item inferred from conversation content
+    class_uri: skos:Concept
+    mixins:
+      - ProvenanceFields
+    slots:
+      - task_id
+      - description
+      - status
+      - priority
+      - task_type
+      - created_at
+      - updated_at
+      - due_date
+      - assignee
+      - derived_from_conversation
+      - executes_content_creation
+    slot_usage:
+      task_id:
+        identifier: true
+        required: true
+      description:
+        required: true
+      status:
+        required: true
+      task_type:
+        required: true
+
+  ContentCreationActivity:
+    description: Creative process for producing content based on inferred tasks
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - activity_id
+      - started_at
+      - ended_at
+      - activity_status
+      - creator
+      - tools_used
+      - parameters
+      - executes_task
+      - generates_content
+    slot_usage:
+      activity_id:
+        identifier: true
+        required: true
+      started_at:
+        required: true
+
+  DerivationInferenceRelationship:
+    description: Provenance relationship tracking how tasks and content are derived through inference
+    class_uri: prov:Derivation
+    mixins:
+      - ProvenanceFields
+    slots:
+      - derivation_id
+      - inference_method
+      - inference_timestamp
+      - confidence_score
+      - inference_parameters
+      - inference_model
+      - source_entity
+      - derived_entity
+      - relationship_type
+    slot_usage:
+      derivation_id:
+        identifier: true
+        required: true
+      inference_method:
+        required: true
+      inference_timestamp:
+        required: true
+
+  IngestionProcess:
+    description: Graphiti data import activity that brings conversations into Neo4j
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - ingestion_id
+      - timestamp
+      - graphiti_version
+      - ingestion_status
+      - source_system
+      - batch_id
+      - records_processed
+      - records_failed
+      - configuration
+      - generates_conversations
+    slot_usage:
+      ingestion_id:
+        identifier: true
+        required: true
+      timestamp:
+        required: true
+      graphiti_version:
+        required: true
+
+  GeneratedContent:
+    description: Output artifact produced from content creation activities
+    class_uri: prov:Entity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - content_id
+      - content_type
+      - content_body
+      - format
+      - title
+      - created_at
+      - file_path
+      - file_size
+      - checksum
+      - generated_by_activity
+      - derived_from_task
+    slot_usage:
+      content_id:
+        identifier: true
+        required: true
+      content_type:
+        required: true
+      content_body:
+        required: true
+
+slots:
+  # Conversation slots
+  conversation_id:
+    description: Unique identifier for the conversation
+    range: string
+    identifier: true
+
+  content:
+    description: The actual content/text of the conversation
+    range: string
+
+  timestamp:
+    description: When the conversation occurred
+    range: datetime
+
+  source:
+    description: Origin system or platform of the conversation
+    range: string
+
+  participants:
+    description: List of participants in the conversation
+    range: string
+    multivalued: true
+
+  conversation_type:
+    description: Type or category of conversation
+    range: ConversationType
+
+  metadata:
+    description: Additional metadata about the conversation
+    range: string
+
+  # Task slots
+  task_id:
+    description: Unique identifier for the task
+    range: string
+    identifier: true
+
+  description:
+    description: Detailed description of the task
+    range: string
+
+  status:
+    description: Current status of the task
+    range: TaskStatus
+
+  priority:
+    description: Priority level of the task
+    range: PriorityLevel
+
+  task_type:
+    description: Type or category of task
+    range: string
+
+  created_at:
+    description: When the task was created
+    range: datetime
+
+  updated_at:
+    description: When the task was last updated
+    range: datetime
+
+  due_date:
+    description: Deadline for task completion
+    range: datetime
+
+  assignee:
+    description: Person or system assigned to the task
+    range: string
+
+  # Content Creation Activity slots
+  activity_id:
+    description: Unique identifier for the content creation activity
+    range: string
+    identifier: true
+
+  started_at:
+    description: When the activity started
+    range: datetime
+
+  ended_at:
+    description: When the activity ended
+    range: datetime
+
+  activity_status:
+    description: Current status of the activity
+    range: ActivityStatus
+
+  creator:
+    description: Person or system performing the activity
+    range: string
+
+  tools_used:
+    description: Tools or software used in the activity
+    range: string
+    multivalued: true
+
+  parameters:
+    description: Configuration parameters for the activity
+    range: string
+
+  # Derivation/Inference Relationship slots
+  derivation_id:
+    description: Unique identifier for the derivation relationship
+    range: string
+    identifier: true
+
+  inference_method:
+    description: Method or algorithm used for inference
+    range: string
+
+  inference_timestamp:
+    description: When the inference was performed
+    range: datetime
+
+  confidence_score:
+    description: Confidence level of the inference (0.0 to 1.0)
+    range: float
+    minimum_value: 0.0
+    maximum_value: 1.0
+
+  inference_parameters:
+    description: Parameters used in the inference process
+    range: string
+
+  inference_model:
+    description: Model or system that performed the inference
+    range: string
+
+  source_entity:
+    description: The entity from which something was derived
+    range: string
+
+  derived_entity:
+    description: The entity that was derived
+    range: string
+
+  relationship_type:
+    description: Type of derivation relationship
+    range: DerivationType
+
+  # Ingestion Process slots
+  ingestion_id:
+    description: Unique identifier for the ingestion process
+    range: string
+    identifier: true
+
+  graphiti_version:
+    description: Version of Graphiti used for ingestion
+    range: string
+
+  ingestion_status:
+    description: Status of the ingestion process
+    range: IngestionStatus
+
+  source_system:
+    description: System from which data was ingested
+    range: string
+
+  batch_id:
+    description: Batch identifier for grouped ingestions
+    range: string
+
+  records_processed:
+    description: Number of records successfully processed
+    range: integer
+
+  records_failed:
+    description: Number of records that failed processing
+    range: integer
+
+  configuration:
+    description: Configuration settings for the ingestion
+    range: string
+
+  # Generated Content slots
+  content_id:
+    description: Unique identifier for the generated content
+    range: string
+    identifier: true
+
+  content_type:
+    description: Type or category of generated content
+    range: ContentType
+
+  content_body:
+    description: The actual generated content
+    range: string
+
+  format:
+    description: Format of the content (e.g., markdown, html, text)
+    range: string
+
+  title:
+    description: Title of the generated content
+    range: string
+
+  file_path:
+    description: Path to the content file if stored externally
+    range: string
+
+  file_size:
+    description: Size of the content file in bytes
+    range: integer
+
+  checksum:
+    description: Checksum for content integrity verification
+    range: string
+
+  # Relationship slots
+  derived_tasks:
+    description: Tasks derived from this conversation
+    range: Task
+    multivalued: true
+    inverse: derived_from_conversation
+
+  ingested_by:
+    description: Ingestion process that created this conversation
+    range: IngestionProcess
+    inverse: generates_conversations
+
+  derived_from_conversation:
+    description: Conversation from which this task was derived
+    range: Conversation
+    inverse: derived_tasks
+
+  executes_content_creation:
+    description: Content creation activity that executes this task
+    range: ContentCreationActivity
+    inverse: executes_task
+
+  executes_task:
+    description: Task being executed by this activity
+    range: Task
+    inverse: executes_content_creation
+
+  generates_content:
+    description: Content generated by this activity
+    range: GeneratedContent
+    multivalued: true
+    inverse: generated_by_activity
+
+  generates_conversations:
+    description: Conversations generated by this ingestion process
+    range: Conversation
+    multivalued: true
+    inverse: ingested_by
+
+  generated_by_activity:
+    description: Activity that generated this content
+    range: ContentCreationActivity
+    inverse: generates_content
+
+  derived_from_task:
+    description: Task from which this content was derived
+    range: Task
+
+enums:
+  ConversationType:
+    description: Types of conversations
+    permissible_values:
+      MEETING:
+        description: Meeting or discussion
+      CHAT:
+        description: Chat or instant message
+      EMAIL:
+        description: Email exchange
+      INTERVIEW:
+        description: Interview or Q&A session
+      BRAINSTORM:
+        description: Brainstorming session
+      OTHER:
+        description: Other conversation type
+
+  TaskStatus:
+    description: Status values for tasks
+    permissible_values:
+      PENDING:
+        description: Task is pending and not yet started
+      IN_PROGRESS:
+        description: Task is currently being worked on
+      COMPLETED:
+        description: Task has been completed
+      CANCELLED:
+        description: Task was cancelled
+      BLOCKED:
+        description: Task is blocked by dependencies
+
+  PriorityLevel:
+    description: Priority levels for tasks
+    permissible_values:
+      LOW:
+        description: Low priority
+      MEDIUM:
+        description: Medium priority
+      HIGH:
+        description: High priority
+      URGENT:
+        description: Urgent priority
+
+  ActivityStatus:
+    description: Status values for activities
+    permissible_values:
+      STARTED:
+        description: Activity has started
+      IN_PROGRESS:
+        description: Activity is in progress
+      COMPLETED:
+        description: Activity has completed
+      FAILED:
+        description: Activity has failed
+      PAUSED:
+        description: Activity is paused
+
+  DerivationType:
+    description: Types of derivation relationships
+    permissible_values:
+      TASK_FROM_CONVERSATION:
+        description: Task derived from conversation
+      CONTENT_FROM_TASK:
+        description: Content derived from task
+      INFERENCE:
+        description: General inference relationship
+      TRANSFORMATION:
+        description: Transformation relationship
+
+  IngestionStatus:
+    description: Status values for ingestion processes
+    permissible_values:
+      STARTED:
+        description: Ingestion has started
+      IN_PROGRESS:
+        description: Ingestion is in progress
+      COMPLETED:
+        description: Ingestion completed successfully
+      FAILED:
+        description: Ingestion failed
+      PARTIAL:
+        description: Ingestion partially completed
+
+  ContentType:
+    description: Types of generated content
+    permissible_values:
+      ARTICLE:
+        description: Article or blog post
+      DOCUMENTATION:
+        description: Technical documentation
+      REPORT:
+        description: Report or analysis
+      SUMMARY:
+        description: Summary or abstract
+      PRESENTATION:
+        description: Presentation or slides
+      CODE:
+        description: Code or script
+      OTHER:
+        description: Other content type

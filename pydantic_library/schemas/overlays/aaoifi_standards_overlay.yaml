@@ -1,0 +1,268 @@
+id: https://example.org/overlays/aaoifi-standards
+name: aaoifi_standards_overlay
+description: |
+  AAOIFI Islamic finance standards extraction overlay.
+
+  Driven by: specs/aaoifi_standards_extraction.yaml
+
+  Core question: "What are the normative rules in AAOIFI standards and where are they sourced from?"
+
+  Uses canonical ontology URIs:
+  - DoCO (Document Components Ontology): Document structure
+  - FaBiO (FRBR-aligned Bibliographic Ontology): Document types
+  - PROV-O (Provenance Ontology): Attribution and derivation
+  - FIBO (Financial Industry Business Ontology): Financial contracts
+  - SKOS (Simple Knowledge Organization System): Concepts and terminology
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+  doco: http://purl.org/spar/doco/
+  fabio: http://purl.org/spar/fabio/
+  dcterms: http://purl.org/dc/terms/
+  skos: http://www.w3.org/2004/02/skos/core#
+  fibo: https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/
+  foaf: http://xmlns.com/foaf/0.1/
+
+default_prefix: aaoifi
+
+imports:
+  - ../core/provenance
+  - ../core/types
+
+default_range: string
+
+# ==================================================================
+# SLOTS
+# ==================================================================
+
+slots:
+  # Document slots
+  title:
+    range: string
+    description: Document title
+    slot_uri: dcterms:title
+
+  edition:
+    range: string
+    description: Edition label (e.g., '2023')
+
+  issued:
+    range: date
+    description: Publication date
+    slot_uri: dcterms:issued
+
+  source_url:
+    range: string
+    description: Where the PDF was downloaded
+
+  language:
+    range: string
+    description: ISO language code (default 'en')
+    slot_uri: dcterms:language
+
+  # Section slots
+  label:
+    range: string
+    description: Section heading or label
+
+  order:
+    range: integer
+    description: 1-based order within parent
+    minimum_value: 1
+
+  # Paragraph slots
+  section_id:
+    range: string
+    description: Parent section ID
+
+  ordinal:
+    range: integer
+    description: 1-based ordinal within section
+    minimum_value: 1
+
+  text:
+    range: string
+    description: Paragraph or clause text content
+
+  page_from:
+    range: integer
+    description: Starting page number
+    minimum_value: 1
+
+  page_to:
+    range: integer
+    description: Ending page number
+    minimum_value: 1
+
+  # Concept slots
+  curie:
+    range: string
+    description: CURIE key in project namespace (e.g., 'if:Murabaha')
+
+  pref_label:
+    range: string
+    description: Preferred label
+    slot_uri: skos:prefLabel
+
+  alt_labels:
+    range: string
+    multivalued: true
+    description: Alternative labels
+    slot_uri: skos:altLabel
+
+  definition:
+    range: string
+    description: Definition or notes
+    slot_uri: skos:definition
+
+  # Rule slots
+  article_no:
+    range: string
+    description: Publisher numbering (e.g., 'Art. 4(1)')
+
+  normative_effect:
+    range: string
+    description: Polarity (requires/prohibits/permits/defines/recommends)
+
+  # Agent slots
+  name:
+    range: string
+    description: Agent name
+    slot_uri: foaf:name
+
+  homepage:
+    range: string
+    description: Homepage URL
+    slot_uri: foaf:homepage
+
+  # Edge-specific slots
+  quote:
+    range: string
+    description: Optional minimal quote span backing a rule
+
+  role:
+    range: string
+    description: Role (e.g., 'issuer', 'publisher')
+
+  weight:
+    range: float
+    description: Optional confidence/weight for topical tagging
+    minimum_value: 0
+    maximum_value: 1
+
+# ==================================================================
+# CLASSES (7 entities + 4 edges)
+# ==================================================================
+
+classes:
+  # Entity classes
+  Document:
+    description: An AAOIFI standard document (edition)
+    class_uri: fabio:SpecificationDocument
+    mixins:
+      - ProvenanceFields
+    slots:
+      - title
+      - edition
+      - issued
+      - source_url
+      - language
+
+  Section:
+    description: Structural section of a document
+    class_uri: doco:Section
+    mixins:
+      - ProvenanceFields
+    slots:
+      - label
+      - order
+
+  Paragraph:
+    description: Smallest citable textual unit (clause/sub-clause)
+    class_uri: doco:Paragraph
+    mixins:
+      - ProvenanceFields
+    slots:
+      - section_id
+      - ordinal
+      - text
+      - page_from
+      - page_to
+
+  Concept:
+    description: SKOS concept for topical tagging
+    class_uri: skos:Concept
+    mixins:
+      - ProvenanceFields
+    slots:
+      - curie
+      - pref_label
+      - alt_labels
+      - definition
+
+  ContractType:
+    description: Islamic contract type (FIBO Contract)
+    class_uri: fibo:Contract
+    mixins:
+      - ProvenanceFields
+    slots:
+      - curie
+      - pref_label
+      - alt_labels
+      - definition
+
+  Rule:
+    description: Normative element backed by paragraphs
+    class_uri: fibo:ContractualElement
+    mixins:
+      - ProvenanceFields
+    slots:
+      - title
+      - text
+      - article_no
+      - normative_effect
+
+  Agent:
+    description: Issuer/maintainer of document (e.g., AAOIFI)
+    class_uri: prov:Agent
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - homepage
+
+  # Edge classes
+  HasComponent:
+    description: Structural containment (Document→Section→Paragraph)
+    class_uri: dcterms:hasPart
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - order
+
+  About:
+    description: Topical tagging (Document/Section/Paragraph → Concept)
+    class_uri: dcterms:subject
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - weight
+
+  EvidenceOf:
+    description: Rule provenance (Rule → Paragraph)
+    class_uri: prov:wasDerivedFrom
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - quote
+      - page_from
+      - page_to
+
+  AttributedTo:
+    description: Document issuance (Document → Agent)
+    class_uri: prov:wasAttributedTo
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - role

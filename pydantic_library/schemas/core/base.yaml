@@ -1,0 +1,33 @@
+id: https://example.org/core/base
+name: core_base
+description: Base configuration for all models
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+default_prefix: core
+
+imports:
+  - linkml:types
+
+default_range: string
+
+# ==================================================================
+# BASE CLASS WITH CONFIGURATION
+# ==================================================================
+
+classes:
+  ConfiguredBaseModel:
+    description: |
+      Base model with Pydantic v2 configuration.
+      All generated models inherit this configuration.
+    abstract: true
+    annotations:
+      pydantic_config:
+        validate_assignment: true
+        validate_default: true
+        extra: ignore
+        arbitrary_types_allowed: true
+        use_enum_values: true
+        populate_by_name: true
+        str_strip_whitespace: true

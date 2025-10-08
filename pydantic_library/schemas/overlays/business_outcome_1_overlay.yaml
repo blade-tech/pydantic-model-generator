@@ -1,0 +1,594 @@
+id: https://example.org/schemas/murabaha-shariah-compliance-audit
+name: murabaha_shariah_compliance_audit
+description: |
+  LinkML schema for auditing Murabaha (Islamic cost-plus financing) transactions 
+  to ensure Shariah compliance. Tracks asset ownership transfer, profit markup transparency, 
+  payment terms, and maintains comprehensive audit trails for compliance verification.
+imports:
+  - ../core/provenance
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+  fibo-fbc-pas: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/
+  fibo-fnd-acc: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/AccountingEquity/
+  fibo-fbc-fse: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/FinancialServicesEntities/
+  fibo-fnd-pty: https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Roles/
+  skos: http://www.w3.org/2004/02/skos/core#
+  schema: http://schema.org/
+default_prefix: murabaha_shariah_compliance_audit
+
+classes:
+  MurabahaTransaction:
+    description: |
+      Islamic cost-plus financing transaction where bank purchases asset and sells 
+      to customer at disclosed markup. Must comply with Shariah principles including 
+      bank ownership before sale and transparent profit disclosure.
+    class_uri: fibo-fbc-pas:Transaction
+    mixins:
+      - ProvenanceFields
+    slots:
+      - transaction_id
+      - transaction_date
+      - total_amount
+      - cost_price
+      - selling_price
+      - compliance_status
+      - transaction_currency
+      - contract_reference
+      - executed_by_bank
+      - involves_asset
+      - has_customer
+      - has_pricing
+      - has_payment_terms
+      - audited_by
+    slot_usage:
+      transaction_id:
+        required: true
+        identifier: true
+      transaction_date:
+        required: true
+      total_amount:
+        required: true
+      compliance_status:
+        required: true
+
+  Asset:
+    description: |
+      Physical or financial asset being financed through Murabaha structure. 
+      Must be halal (permissible) and exist at time of sale.
+    class_uri: fibo-fnd-acc:Asset
+    mixins:
+      - ProvenanceFields
+    slots:
+      - asset_id
+      - asset_type
+      - asset_description
+      - asset_value
+      - acquisition_date
+      - is_halal_compliant
+      - asset_category
+      - serial_number
+      - supplier_name
+      - transferred_via
+    slot_usage:
+      asset_id:
+        required: true
+        identifier: true
+      asset_type:
+        required: true
+      is_halal_compliant:
+        required: true
+
+  Bank:
+    description: |
+      Islamic financial institution acting as intermediary purchaser and seller 
+      in Murabaha transaction. Must maintain Shariah-compliant operations.
+    class_uri: fibo-fbc-fse:FinancialInstitution
+    mixins:
+      - ProvenanceFields
+    slots:
+      - institution_id
+      - bank_name
+      - institution_type
+      - shariah_board_certified
+      - license_number
+      - jurisdiction
+      - contact_information
+      - executes_transactions
+    slot_usage:
+      institution_id:
+        required: true
+        identifier: true
+      bank_name:
+        required: true
+      shariah_board_certified:
+        required: true
+
+  Customer:
+    description: |
+      End customer purchasing asset through Murabaha financing. 
+      Must be informed of all transaction terms and profit markup.
+    class_uri: fibo-fnd-pty:PartyInRole
+    mixins:
+      - ProvenanceFields
+    slots:
+      - customer_id
+      - customer_name
+      - customer_type
+      - contact_details
+      - identification_number
+      - address
+      - disclosed_terms_acknowledged
+      - participates_in_transactions
+    slot_usage:
+      customer_id:
+        required: true
+        identifier: true
+      customer_name:
+        required: true
+
+  AuditActivity:
+    description: |
+      Compliance audit activity performed to verify Shariah adherence. 
+      Documents all checks performed and findings.
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - audit_id
+      - audit_date
+      - audit_type
+      - auditor_name
+      - auditor_credentials
+      - audit_scope
+      - audit_status
+      - performed_by_auditor
+      - audits_transaction
+      - generated_evidence
+    slot_usage:
+      audit_id:
+        required: true
+        identifier: true
+      audit_date:
+        required: true
+      audit_type:
+        required: true
+
+  OwnershipTransfer:
+    description: |
+      Event recording legal transfer of asset ownership between parties. 
+      Critical for proving bank ownership before customer sale (key Shariah requirement).
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - transfer_id
+      - transfer_date
+      - transfer_amount
+      - transfer_type
+      - legal_document_reference
+      - registration_number
+      - transfer_jurisdiction
+      - from_party
+      - to_party
+      - transferred_asset
+      - witnessed_by
+    slot_usage:
+      transfer_id:
+        required: true
+        identifier: true
+      transfer_date:
+        required: true
+      from_party:
+        required: true
+      to_party:
+        required: true
+
+  ComplianceEvidence:
+    description: |
+      Documentary evidence supporting compliance determination. 
+      Includes contracts, ownership documents, disclosure forms, and audit findings.
+    class_uri: prov:Entity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - evidence_id
+      - check_type
+      - compliance_status
+      - document_reference
+      - document_type
+      - auditor_notes
+      - findings_summary
+      - remediation_required
+      - verification_date
+      - evidence_for_transaction
+      - generated_by_audit
+    slot_usage:
+      evidence_id:
+        required: true
+        identifier: true
+      check_type:
+        required: true
+      compliance_status:
+        required: true
+
+  ProfitMarkup:
+    description: |
+      Disclosed profit margin added to cost price in Murabaha transaction. 
+      Must be transparent and clearly communicated to customer.
+    class_uri: fibo-fbc-pas:Price
+    mixins:
+      - ProvenanceFields
+    slots:
+      - markup_id
+      - cost_price
+      - profit_amount
+      - selling_price
+      - profit_percentage
+      - markup_calculation_method
+      - disclosed_to_customer
+      - disclosure_date
+      - disclosure_document
+      - pricing_for_transaction
+    slot_usage:
+      markup_id:
+        required: true
+        identifier: true
+      cost_price:
+        required: true
+      profit_amount:
+        required: true
+      selling_price:
+        required: true
+      disclosed_to_customer:
+        required: true
+
+  PaymentTerms:
+    description: |
+      Payment schedule and conditions for Murabaha transaction. 
+      Must not include interest or prohibited late payment penalties.
+    class_uri: fibo-fbc-pas:FinancialProductTerms
+    mixins:
+      - ProvenanceFields
+    slots:
+      - terms_id
+      - payment_schedule
+      - installment_amount
+      - number_of_installments
+      - payment_frequency
+      - late_payment_handling
+      - contains_interest
+      - contains_penalties
+      - early_payment_terms
+      - grace_period_days
+    slot_usage:
+      terms_id:
+        required: true
+        identifier: true
+      payment_schedule:
+        required: true
+      contains_interest:
+        required: true
+      contains_penalties:
+        required: true
+
+  Auditor:
+    description: |
+      Individual or entity performing Shariah compliance audits. 
+      Must have appropriate credentials and expertise.
+    class_uri: prov:Agent
+    mixins:
+      - ProvenanceFields
+    slots:
+      - auditor_id
+      - auditor_name
+      - certification_type
+      - certification_number
+      - specialization
+      - years_experience
+      - performs_audits
+    slot_usage:
+      auditor_id:
+        required: true
+        identifier: true
+      auditor_name:
+        required: true
+
+slots:
+  # MurabahaTransaction slots
+  transaction_id:
+    description: Unique identifier for the Murabaha transaction
+    range: string
+    identifier: true
+    slot_uri: schema:identifier
+
+  transaction_date:
+    description: Date when the transaction was executed
+    range: date
+    slot_uri: schema:dateCreated
+
+  total_amount:
+    description: Total transaction amount (selling price)
+    range: decimal
+    slot_uri: schema:amount
+
+  cost_price:
+    description: Original cost price paid by bank to acquire asset
+    range: decimal
+    slot_uri: fibo-fbc-pas:hasPrice
+
+  selling_price:
+    description: Final selling price to customer (cost + profit)
+    range: decimal
+    slot_uri: fibo-fbc-pas:hasPrice
+
+  compliance_status:
+    description: Current Shariah compliance status of transaction
+    range: ComplianceStatusEnum
+    slot_uri: schema:status
+
+  transaction_currency:
+    description: Currency used for transaction
+    range: string
+    slot_uri: schema:currency
+
+  contract_reference:
+    description: Reference to legal contract document
+    range: string
+    slot_uri: schema:identifier
+
+  # Asset slots
+  asset_id:
+    description: Unique identifier for the asset
+    range: string
+    identifier: true
+    slot_uri: schema:identifier
+
+  asset_type:
+    description: Type/category of asset (e.g., vehicle, property, equipment)
+    range: AssetTypeEnum
+    slot_uri: schema:category
+
+  asset_description:
+    description: Detailed description of the asset
+    range: string
+    slot_uri: schema:description
+
+  asset_value:
+    description: Assessed value of the asset
+    range: decimal
+    slot_uri: fibo-fnd-acc:hasValue
+
+  acquisition_date:
+    description: Date when asset was acquired
+    range: date
+    slot_uri: schema:dateCreated
+
+  is_halal_compliant:
+    description: Whether asset is permissible under Islamic law
+    range: boolean
+    slot_uri: schema:isAccessibleForFree
+
+  asset_category:
+    description: Broad category of asset
+    range: string
+    slot_uri: schema:category
+
+  serial_number:
+    description: Serial or identification number of asset
+    range: string
+    slot_uri: schema:serialNumber
+
+  supplier_name:
+    description: Original supplier/vendor of the asset
+    range: string
+    slot_uri: schema:provider
+
+  # Bank slots
+  institution_id:
+    description: Unique identifier for financial institution
+    range: string
+    identifier: true
+    slot_uri: schema:identifier
+
+  bank_name:
+    description: Official name of the bank
+    range: string
+    slot_uri: schema:name
+
+  institution_type:
+    description: Type of financial institution
+    range: string
+    slot_uri: schema:additionalType
+
+  shariah_board_certified:
+    description: Whether institution has certified Shariah board
+    range: boolean
+    slot_uri: schema:accreditationStatus
+
+  license_number:
+    description: Banking license number
+    range: string
+    slot_uri: schema:identifier
+
+  jurisdiction:
+    description: Regulatory jurisdiction
+    range: string
+    slot_uri: schema:jurisdiction
+
+  contact_information:
+    description: Contact details for institution
+    range: string
+    slot_uri: schema:contactPoint
+
+  # Customer slots
+  customer_id:
+    description: Unique identifier for customer
+    range: string
+    identifier: true
+    slot_uri: schema:identifier
+
+  customer_name:
+    description: Full name of customer
+    range: string
+    slot_uri: schema:name
+
+  customer_type:
+    description: Type of customer (individual, corporate, etc.)
+    range: CustomerTypeEnum
+    slot_uri: schema:additionalType
+
+  contact_details:
+    description: Customer contact information
+    range: string
+    slot_uri: schema:contactPoint
+
+  identification_number:
+    description: Government-issued identification number
+    range: string
+    slot_uri: schema:identifier
+
+  address:
+    description: Customer address
+    range: string
+    slot_uri: schema:address
+
+  disclosed_terms_acknowledged:
+    description: Whether customer acknowledged receiving full disclosure
+    range: boolean
+    slot_uri: schema:acceptedOffer
+
+  # AuditActivity slots
+  audit_id:
+    description: Unique identifier for audit activity
+    range: string
+    identifier: true
+    slot_uri: schema:identifier
+
+  audit_date:
+    description: Date when audit was performed
+    range: date
+    slot_uri: prov:startedAtTime
+
+  audit_type:
+    description: Type of audit performed
+    range: AuditTypeEnum
+    slot_uri: schema:additionalType
+
+  auditor_name:
+    description: Name of person/entity conducting audit
+    range: string
+    slot_uri: prov:wasAssociatedWith
+
+  auditor_credentials:
+    description: Credentials and certifications of auditor
+    range: string
+    slot_uri: schema:qualifications
+
+  audit_scope:
+    description: Scope and focus areas of audit
+    range: string
+    slot_uri: schema:description
+
+  audit_status:
+    description: Current status of audit
+    range: AuditStatusEnum
+    slot_uri: schema:status
+
+  # OwnershipTransfer slots
+  transfer_id:
+    description: Unique identifier for ownership transfer
+    range: string
+    identifier: true
+    slot_uri: schema:identifier
+
+  transfer_date:
+    description: Date of ownership transfer
+    range: date
+    slot_uri: prov:startedAtTime
+
+  transfer_amount:
+    description: Amount paid in transfer
+    range: decimal
+    slot_uri: schema:amount
+
+  transfer_type:
+    description: Type of transfer (purchase, sale, etc.)
+    range: TransferTypeEnum
+    slot_uri: schema:additionalType
+
+  legal_document_reference:
+    description: Reference to legal transfer document
+    range: string
+    slot_uri: schema:identifier
+
+  registration_number:
+    description: Official registration number of transfer
+    range: string
+    slot_uri: schema:identifier
+
+  transfer_jurisdiction:
+    description: Legal jurisdiction of transfer
+    range: string
+    slot_uri: schema:jurisdiction
+
+  witnessed_by:
+    description: Witness to the transfer
+    range: string
+    slot_uri: prov:wasAttributedTo
+
+  # ComplianceEvidence slots
+  evidence_id:
+    description: Unique identifier for compliance evidence
+    range: string
+    identifier: true
+    slot_uri: schema:identifier
+
+  check_type:
+    description: Type of compliance check performed
+    range: CheckTypeEnum
+    slot_uri: schema:additionalType
+
+  compliance_status:
+    description: Result of compliance check
+    range: ComplianceStatusEnum
+    slot_uri: schema:status
+
+  document_reference:
+    description: Reference to supporting document
+    range: string
+    slot_uri: schema:identifier
+
+  document_type:
+    description: Type of evidence document
+    range: string
+    slot_uri: schema:additionalType
+
+  auditor_notes:
+    description: Detailed notes from auditor
+    range: string
+    slot_uri: schema:comment
+
+  findings_summary:
+    description: Summary of audit findings
+    range: string
+    slot_uri: schema:abstract
+
+  remediation_required:
+    description: Whether remediation action is needed
+    range: boolean
+    slot_uri: schema:actionStatus
+
+  verification_date:
+    description: Date evidence was verified
+    range: date
+    slot_uri: prov:generatedAtTime
+
+  # ProfitMarkup slots
+  markup_id:
+    description: Unique identifier for profit markup
+    range: string
+    identifier: true
+    slot_uri: schema:identifier
+
+  profit_amount:

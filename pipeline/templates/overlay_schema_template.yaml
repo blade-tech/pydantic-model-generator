@@ -1,0 +1,91 @@
+id: https://example.org/schemas/your-overlay
+name: your_overlay
+description: "Description of what this overlay models"
+
+# IMPORTANT: Import core provenance schema
+imports:
+  - ../core/provenance
+
+# Define prefixes for canonical ontology URIs
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+  doco: http://purl.org/spar/doco/
+  fabio: http://purl.org/spar/fabio/
+  fibo: https://spec.edmcouncil.org/fibo/ontology/
+  skos: http://www.w3.org/2004/02/skos/core#
+
+default_prefix: your_overlay
+
+# Entity definitions
+classes:
+  YourEntity:
+    description: "Primary entity description"
+    # Map to canonical ontology class
+    class_uri: prov:Entity  # or doco:Section, fabio:Document, etc.
+    # IMPORTANT: Always include ProvenanceFields mixin
+    mixins:
+      - ProvenanceFields
+    slots:
+      - field1
+      - field2
+      - status
+
+  AnotherEntity:
+    description: "Secondary entity description"
+    class_uri: prov:Entity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - entity_type
+
+# Edge (relationship) definitions
+edges:
+  YourEdge:
+    description: "Relationship between YourEntity and AnotherEntity"
+    source: YourEntity
+    target: AnotherEntity
+    # IMPORTANT: Always include EdgeProvenanceFields mixin
+    mixins:
+      - EdgeProvenanceFields
+    # Map to canonical ontology property (optional)
+    # slot_uri: prov:wasDerivedFrom
+    slots:
+      - relationship_field
+
+# Slot (field) definitions
+slots:
+  # Entity fields
+  field1:
+    description: "Description of field1"
+    range: string
+    required: false
+
+  field2:
+    description: "Description of field2"
+    range: string
+    required: false
+
+  status:
+    description: "Status of the entity"
+    range: string
+    required: false
+    # Optional: Define allowed values
+    # pattern: "^(proposed|active|completed|blocked)$"
+
+  name:
+    description: "Name of the entity"
+    range: string
+    required: false
+
+  entity_type:
+    description: "Type classification"
+    range: string
+    required: false
+
+  # Edge fields
+  relationship_field:
+    description: "Field specific to the edge"
+    range: string
+    required: false

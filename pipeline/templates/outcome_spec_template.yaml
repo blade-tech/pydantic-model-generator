@@ -1,0 +1,72 @@
+id: https://example.org/specs/your-outcome
+outcome_name: "Your Outcome Name"
+
+# Business context (optional but helpful)
+context_summary: "Brief description of what this overlay helps track or manage"
+
+# The business questions this overlay must answer
+outcome_questions:
+  - question: "What entities do I need to track?"
+    target_entities: [YourEntity]
+    expected_relations: [YourEdge]
+
+  - question: "What status/progress information do I need?"
+    target_entities: [YourEntity]
+    expected_relations: []
+
+# Validation queries (Evidence Query Plan)
+# These become pytest tests to verify the models support your business questions
+validation_queries:
+  - name: "test_entity_retrieval"
+    description: "Verify we can retrieve entities with required fields"
+    cypher: |
+      MATCH (e:YourEntity)
+      RETURN e.field1, e.field2, e.status
+    expected_fields:
+      YourEntity: [field1, field2, status]
+
+  - name: "test_relationship_traversal"
+    description: "Verify we can traverse relationships"
+    cypher: |
+      MATCH (source:SourceEntity)-[r:YourEdge]->(target:TargetEntity)
+      RETURN source.name, r.relationship_field, target.name
+    expected_fields:
+      SourceEntity: [name]
+      TargetEntity: [name]
+      YourEdge: [relationship_field]
+
+# Target entities to model
+target_entities:
+  - name: YourEntity
+    description: "Primary entity description"
+    must_have_slots: [field1, field2, status]
+
+  - name: AnotherEntity
+    description: "Secondary entity description"
+    must_have_slots: [name, type]
+
+# Relationships between entities
+relations:
+  - name: YourEdge
+    subject: YourEntity
+    object: AnotherEntity
+    description: "Relationship description"
+
+# Canonical ontology mappings (use standard ontologies)
+ontologies:
+  - prefix: prov
+    base_uri: "http://www.w3.org/ns/prov#"
+  - prefix: doco
+    base_uri: "http://purl.org/spar/doco/"
+  - prefix: fabio
+    base_uri: "http://purl.org/spar/fabio/"
+  - prefix: fibo
+    base_uri: "https://spec.edmcouncil.org/fibo/ontology/"
+  - prefix: skos
+    base_uri: "http://www.w3.org/2004/02/skos/core#"
+
+# Graphiti-specific constraints
+graphiti_constraints:
+  use_entity_type_metadata: true
+  edge_names_pascal_case: true
+  stamp_uri_on_edges: true

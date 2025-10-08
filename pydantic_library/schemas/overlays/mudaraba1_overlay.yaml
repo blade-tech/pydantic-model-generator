@@ -1,0 +1,427 @@
+id: https://example.org/schemas/mudarabah-wakalah-hybrid-shariah-audit
+name: mudarabah_wakalah_hybrid_shariah_audit
+description: Comprehensive audit specification for hybrid Islamic finance contracts combining Mudarabah (profit-sharing) and Wakalah (agency) structures, ensuring Shariah compliance and proper documentation of contract terms, parties, and audit findings.
+imports:
+  - ../core/provenance
+prefixes:
+  linkml: https://w3id.org/linkml/
+  doco: http://purl.org/spar/doco/
+  fabio: http://purl.org/spar/fabio/
+  prov: http://www.w3.org/ns/prov#
+  fibo-fbc: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/
+  fibo-fnd: https://spec.edmcouncil.org/fibo/ontology/FND/Law/LegalCore/
+  skos: http://www.w3.org/2004/02/skos/core#
+default_prefix: mudarabah_wakalah_hybrid_shariah_audit
+
+classes:
+  Audit:
+    description: Audit activity examining Shariah contract compliance
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - audit_id
+      - audit_date
+      - auditor_name
+      - audit_scope
+      - audits_contract
+      - produces_report
+    slot_usage:
+      audit_id:
+        required: true
+        identifier: true
+      audit_date:
+        required: true
+      auditor_name:
+        required: true
+      audit_scope:
+        required: true
+
+  MudarabahContract:
+    description: Profit-sharing partnership contract where one party provides capital and the other provides expertise
+    class_uri: fibo-fbc:Contract
+    mixins:
+      - ProvenanceFields
+    slots:
+      - contract_id
+      - rabb_ul_maal
+      - mudarib
+      - capital_amount
+      - profit_sharing_ratio
+      - contract_date
+      - contract_status
+    slot_usage:
+      contract_id:
+        required: true
+        identifier: true
+      rabb_ul_maal:
+        required: true
+      mudarib:
+        required: true
+      capital_amount:
+        required: true
+      profit_sharing_ratio:
+        required: true
+
+  WakalahContract:
+    description: Agency contract where a principal appoints an agent to perform specific tasks
+    class_uri: fibo-fbc:Contract
+    mixins:
+      - ProvenanceFields
+    slots:
+      - contract_id
+      - principal
+      - wakil
+      - agency_fee
+      - scope_of_authority
+      - contract_date
+      - contract_status
+    slot_usage:
+      contract_id:
+        required: true
+        identifier: true
+      principal:
+        required: true
+      wakil:
+        required: true
+      agency_fee:
+        required: true
+      scope_of_authority:
+        required: true
+
+  HybridShariahContract:
+    description: Composite financial instrument combining Mudarabah and Wakalah structures
+    class_uri: fibo-fbc:FinancialInstrument
+    mixins:
+      - ProvenanceFields
+    slots:
+      - contract_id
+      - contract_name
+      - inception_date
+      - maturity_date
+      - total_value
+      - contract_status
+      - comprises_mudarabah
+      - comprises_wakalah
+      - must_comply_with_framework
+      - has_terms
+    slot_usage:
+      contract_id:
+        required: true
+        identifier: true
+      contract_name:
+        required: true
+      inception_date:
+        required: true
+      maturity_date:
+        required: true
+      total_value:
+        required: true
+
+  ShariahComplianceFramework:
+    description: Regulatory framework defining Shariah compliance requirements for Islamic finance
+    class_uri: fibo-fnd:RegulatoryScheme
+    mixins:
+      - ProvenanceFields
+    slots:
+      - framework_id
+      - framework_name
+      - governing_body
+      - compliance_standards
+      - effective_date
+      - version
+    slot_usage:
+      framework_id:
+        required: true
+        identifier: true
+      framework_name:
+        required: true
+      governing_body:
+        required: true
+      compliance_standards:
+        required: true
+
+  AuditReport:
+    description: Document containing audit findings and recommendations
+    class_uri: fabio:Report
+    mixins:
+      - ProvenanceFields
+    slots:
+      - report_id
+      - report_date
+      - audit_opinion
+      - findings
+      - recommendations
+      - report_status
+      - references_framework
+    slot_usage:
+      report_id:
+        required: true
+        identifier: true
+      report_date:
+        required: true
+      audit_opinion:
+        required: true
+      findings:
+        required: true
+
+  ContractTerms:
+    description: Structured vocabulary of terms and conditions in Shariah contracts
+    class_uri: skos:ConceptScheme
+    mixins:
+      - ProvenanceFields
+    slots:
+      - term_id
+      - term_name
+      - term_value
+      - term_category
+      - term_description
+      - is_mandatory
+    slot_usage:
+      term_id:
+        required: true
+        identifier: true
+      term_name:
+        required: true
+      term_value:
+        required: true
+      term_category:
+        required: true
+
+slots:
+  # Audit slots
+  audit_id:
+    description: Unique identifier for the audit activity
+    range: string
+
+  audit_date:
+    description: Date when the audit was conducted
+    range: date
+
+  auditor_name:
+    description: Name of the auditor or audit firm
+    range: string
+
+  audit_scope:
+    description: Scope and coverage of the audit activity
+    range: string
+
+  # MudarabahContract slots
+  rabb_ul_maal:
+    description: Capital provider in the Mudarabah contract
+    range: string
+
+  mudarib:
+    description: Fund manager/entrepreneur in the Mudarabah contract
+    range: string
+
+  capital_amount:
+    description: Amount of capital provided by Rabb-ul-Maal
+    range: float
+
+  profit_sharing_ratio:
+    description: Ratio for sharing profits between parties (e.g., 60:40)
+    range: string
+
+  # WakalahContract slots
+  principal:
+    description: Principal party appointing the agent
+    range: string
+
+  wakil:
+    description: Agent appointed to perform tasks on behalf of principal
+    range: string
+
+  agency_fee:
+    description: Fee paid to the agent for services
+    range: float
+
+  scope_of_authority:
+    description: Defined scope of authority granted to the agent
+    range: string
+
+  # HybridShariahContract slots
+  contract_id:
+    description: Unique identifier for the contract
+    range: string
+
+  contract_name:
+    description: Name or title of the contract
+    range: string
+
+  inception_date:
+    description: Date when the contract becomes effective
+    range: date
+
+  maturity_date:
+    description: Date when the contract expires or matures
+    range: date
+
+  total_value:
+    description: Total monetary value of the contract
+    range: float
+
+  contract_status:
+    description: Current status of the contract
+    range: ContractStatusEnum
+
+  contract_date:
+    description: Date of contract execution
+    range: date
+
+  # ShariahComplianceFramework slots
+  framework_id:
+    description: Unique identifier for the compliance framework
+    range: string
+
+  framework_name:
+    description: Name of the Shariah compliance framework
+    range: string
+
+  governing_body:
+    description: Organization or body governing the framework
+    range: string
+
+  compliance_standards:
+    description: List of compliance standards and requirements
+    range: string
+    multivalued: true
+
+  effective_date:
+    description: Date when the framework becomes effective
+    range: date
+
+  version:
+    description: Version number of the framework
+    range: string
+
+  # AuditReport slots
+  report_id:
+    description: Unique identifier for the audit report
+    range: string
+
+  report_date:
+    description: Date when the report was issued
+    range: date
+
+  audit_opinion:
+    description: Auditor's opinion on compliance status
+    range: AuditOpinionEnum
+
+  findings:
+    description: Detailed audit findings
+    range: string
+    multivalued: true
+
+  recommendations:
+    description: Recommendations for addressing findings
+    range: string
+    multivalued: true
+
+  report_status:
+    description: Current status of the report
+    range: ReportStatusEnum
+
+  # ContractTerms slots
+  term_id:
+    description: Unique identifier for the contract term
+    range: string
+
+  term_name:
+    description: Name of the contract term
+    range: string
+
+  term_value:
+    description: Value or content of the term
+    range: string
+
+  term_category:
+    description: Category classification of the term
+    range: string
+
+  term_description:
+    description: Detailed description of the term
+    range: string
+
+  is_mandatory:
+    description: Whether the term is mandatory for compliance
+    range: boolean
+
+  # Relationship slots
+  audits_contract:
+    description: Links audit to the contract being audited
+    range: HybridShariahContract
+    multivalued: true
+
+  produces_report:
+    description: Links audit to the report it produces
+    range: AuditReport
+    multivalued: true
+
+  comprises_mudarabah:
+    description: Links hybrid contract to its Mudarabah component
+    range: MudarabahContract
+    multivalued: true
+
+  comprises_wakalah:
+    description: Links hybrid contract to its Wakalah component
+    range: WakalahContract
+    multivalued: true
+
+  must_comply_with_framework:
+    description: Links contract to compliance framework it must adhere to
+    range: ShariahComplianceFramework
+    multivalued: true
+
+  has_terms:
+    description: Links contract to its terms and conditions
+    range: ContractTerms
+    multivalued: true
+
+  references_framework:
+    description: Links audit report to referenced compliance framework
+    range: ShariahComplianceFramework
+    multivalued: true
+
+enums:
+  ContractStatusEnum:
+    description: Enumeration of possible contract statuses
+    permissible_values:
+      ACTIVE:
+        description: Contract is currently active
+      EXPIRED:
+        description: Contract has reached maturity
+      TERMINATED:
+        description: Contract was terminated early
+      PENDING:
+        description: Contract is pending approval
+      SUSPENDED:
+        description: Contract is temporarily suspended
+
+  AuditOpinionEnum:
+    description: Enumeration of possible audit opinions
+    permissible_values:
+      COMPLIANT:
+        description: Fully compliant with Shariah requirements
+      NON_COMPLIANT:
+        description: Not compliant with Shariah requirements
+      QUALIFIED_OPINION:
+        description: Compliant with some reservations
+      ADVERSE_OPINION:
+        description: Significant non-compliance issues
+      DISCLAIMER:
+        description: Unable to form an opinion
+
+  ReportStatusEnum:
+    description: Enumeration of possible report statuses
+    permissible_values:
+      DRAFT:
+        description: Report is in draft status
+      FINAL:
+        description: Report is finalized
+      UNDER_REVIEW:
+        description: Report is under review
+      PUBLISHED:
+        description: Report has been published
+      ARCHIVED:
+        description: Report has been archived

@@ -1,0 +1,138 @@
+id: https://example.org/specs/business-outcomes-tracking
+name: business_outcomes_tracking
+description: |
+  Outcome-driven specification for tracking business outcomes, decisions, and task completion.
+
+  This OutcomeSpec defines the questions we need to answer and drives the schema design.
+
+outcome_questions:
+  - question: "What business outcomes are we tracking and what is their status?"
+    target_entities: [BusinessOutcome]
+    required_attributes: [name, status, priority, owner, due_date, actual_completion]
+
+  - question: "What decisions block or enable specific outcomes?"
+    target_entities: [BusinessOutcome, BusinessDecision]
+    required_relations: [BlockedBy, Fulfills]
+
+  - question: "What tasks are assigned to deliver each outcome?"
+    target_entities: [BusinessOutcome, BusinessTask, Actor]
+    required_relations: [Requires, AssignedTo]
+
+  - question: "Who is responsible for each outcome and what is their availability?"
+    target_entities: [BusinessOutcome, Actor]
+    required_relations: [ResponsibleFor]
+    required_attributes: [Actor.availability, Actor.expertise]
+
+  - question: "What handoffs are needed and what is their status?"
+    target_entities: [BusinessHandoff, Actor]
+    required_relations: [Transfers]
+    required_attributes: [handoff_status, from_party, to_party, expected_date, actual_date]
+
+# Core entities needed to answer these questions
+core_entities:
+  BusinessOutcome:
+    description: "A business outcome or objective to track"
+    required_for: ["outcome status tracking", "decision blocking", "task assignment"]
+
+  BusinessDecision:
+    description: "A decision that blocks or enables outcomes"
+    required_for: ["decision impact on outcomes"]
+
+  BusinessTask:
+    description: "A concrete task required to deliver outcomes"
+    required_for: ["task assignment", "completion tracking"]
+
+  BusinessHandoff:
+    description: "A handoff between parties that must be tracked"
+    required_for: ["handoff status tracking", "party coordination"]
+
+  Actor:
+    description: "Team member or stakeholder (from shared identity)"
+    required_for: ["responsibility tracking", "task assignment", "availability checking"]
+
+# Core relations needed
+core_relations:
+  BlockedBy:
+    description: "Outcome blocked by a decision"
+    source: BusinessOutcome
+    target: BusinessDecision
+
+  Fulfills:
+    description: "Decision fulfills or enables outcome"
+    source: BusinessDecision
+    target: BusinessOutcome
+
+  Requires:
+    description: "Outcome requires task"
+    source: BusinessOutcome
+    target: BusinessTask
+
+  AssignedTo:
+    description: "Task assigned to actor"
+    source: BusinessTask
+    target: Actor
+
+  ResponsibleFor:
+    description: "Actor responsible for outcome"
+    source: Actor
+    target: BusinessOutcome
+
+  Transfers:
+    description: "Handoff transfers from one party to another"
+    source: BusinessHandoff
+    target: Actor
+
+# Evidence Query Plan (EQP) - tests to validate schema
+validation_queries:
+  - name: "test_outcome_status_retrieval"
+    description: "Can we retrieve all outcomes with their status?"
+    cypher: |
+      MATCH (o:BusinessOutcome)
+      RETURN o.name, o.status, o.priority, o.owner, o.due_date, o.actual_completion
+    expected_fields: [name, status, priority, owner, due_date, actual_completion]
+
+  - name: "test_decision_blocking_outcomes"
+    description: "Can we find which decisions block which outcomes?"
+    cypher: |
+      MATCH (o:BusinessOutcome)-[r:BlockedBy]->(d:BusinessDecision)
+      RETURN o.name, d.name, r.rel_id
+    expected_relations: [BlockedBy]
+
+  - name: "test_task_assignment"
+    description: "Can we find which tasks are assigned to which actors?"
+    cypher: |
+      MATCH (o:BusinessOutcome)-[:Requires]->(t:BusinessTask)-[:AssignedTo]->(a:Actor)
+      RETURN o.name, t.name, a.name, a.availability
+    expected_relations: [Requires, AssignedTo]
+
+  - name: "test_responsibility_tracking"
+    description: "Can we find who is responsible for each outcome?"
+    cypher: |
+      MATCH (a:Actor)-[:ResponsibleFor]->(o:BusinessOutcome)
+      RETURN a.name, a.expertise, o.name, o.status
+    expected_relations: [ResponsibleFor]
+
+  - name: "test_handoff_tracking"
+    description: "Can we track handoff status and parties?"
+    cypher: |
+      MATCH (h:BusinessHandoff)-[:Transfers]->(a:Actor)
+      WHERE h.from_party IS NOT NULL
+      RETURN h.name, h.handoff_status, h.from_party, h.to_party, h.expected_date, h.actual_date, a.name
+    expected_fields: [handoff_status, from_party, to_party, expected_date, actual_date]
+    expected_relations: [Transfers]
+
+# Closed-loop validation criteria
+validation_criteria:
+  schema_completeness:
+    - "All target_entities from outcome_questions must have corresponding classes in overlay schema"
+    - "All required_relations from outcome_questions must have corresponding edge classes in overlay schema"
+    - "All required_attributes from outcome_questions must exist as slots in entity classes"
+
+  query_executability:
+    - "All validation_queries must execute without errors against generated Pydantic models"
+    - "All expected_fields must be present in query results"
+    - "All expected_relations must be traversable in the knowledge graph"
+
+  outcome_testability:
+    - "Each outcome_question must map to at least one validation_query"
+    - "Validation queries must return non-empty results when test data is provided"

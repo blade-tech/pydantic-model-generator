@@ -1,0 +1,147 @@
+id: https://example.org/specs/aaoifi-standards-extraction
+name: aaoifi_standards_extraction
+description: |
+  Outcome-driven specification for extracting and tracking AAOIFI standards.
+
+  This OutcomeSpec defines questions we need to answer about Islamic finance standards
+  and drives the schema design for document structure and rule extraction.
+
+outcome_questions:
+  - question: "What AAOIFI standard documents exist and who issued them?"
+    target_entities: [Document, Agent]
+    required_relations: [AttributedTo]
+    required_attributes: [Document.title, Document.edition, Document.issued, Agent.name]
+
+  - question: "What is the structural hierarchy of a standard document?"
+    target_entities: [Document, Section, Paragraph]
+    required_relations: [HasComponent]
+    required_attributes: [Section.label, Section.order, Paragraph.ordinal, Paragraph.text]
+
+  - question: "What topical concepts are covered in each section or paragraph?"
+    target_entities: [Document, Section, Paragraph, Concept]
+    required_relations: [About]
+    required_attributes: [Concept.pref_label, Concept.definition]
+
+  - question: "What normative rules exist and where are they sourced from?"
+    target_entities: [Rule, Paragraph]
+    required_relations: [EvidenceOf]
+    required_attributes: [Rule.title, Rule.article_no, Rule.normative_effect, Paragraph.text, Paragraph.page_from, Paragraph.page_to]
+
+  - question: "What contract types are defined and what rules apply to them?"
+    target_entities: [ContractType, Rule, Concept]
+    required_relations: [About]
+    required_attributes: [ContractType.pref_label, Rule.normative_effect]
+
+# Core entities needed to answer these questions
+core_entities:
+  Document:
+    description: "An AAOIFI standard document (edition)"
+    required_for: ["document tracking", "issuance attribution", "structural hierarchy"]
+
+  Section:
+    description: "Structural section of a document"
+    required_for: ["document hierarchy", "topical organization"]
+
+  Paragraph:
+    description: "Smallest citable textual unit (clause/sub-clause)"
+    required_for: ["rule sourcing", "precise citation"]
+
+  Concept:
+    description: "SKOS concept for topical tagging (e.g., Murabahah, Riba)"
+    required_for: ["topical classification", "concept definitions"]
+
+  ContractType:
+    description: "Islamic contract type (subtype of Concept)"
+    required_for: ["contract classification", "rule applicability"]
+
+  Rule:
+    description: "Normative element (requirement, prohibition, permission)"
+    required_for: ["rule extraction", "compliance checking"]
+
+  Agent:
+    description: "Issuer/maintainer of document (e.g., AAOIFI)"
+    required_for: ["document attribution", "authority tracking"]
+
+# Core relations needed
+core_relations:
+  HasComponent:
+    description: "Structural containment (Document→Section→Paragraph)"
+    source: [Document, Section]
+    target: [Section, Paragraph]
+
+  About:
+    description: "Topical tagging (Document/Section/Paragraph → Concept)"
+    source: [Document, Section, Paragraph]
+    target: [Concept, ContractType]
+
+  EvidenceOf:
+    description: "Rule provenance (Rule → Paragraph)"
+    source: Rule
+    target: Paragraph
+
+  AttributedTo:
+    description: "Document issuance (Document → Agent)"
+    source: Document
+    target: Agent
+
+# Evidence Query Plan (EQP) - tests to validate schema
+validation_queries:
+  - name: "test_document_retrieval"
+    description: "Can we retrieve document details and issuer?"
+    cypher: |
+      MATCH (d:Document)-[:AttributedTo]->(a:Agent)
+      RETURN d.id, d.title, d.edition, d.issued, a.name
+    expected_fields: [id, title, edition, issued]
+    expected_relations: [AttributedTo]
+
+  - name: "test_document_structure"
+    description: "Can we traverse document hierarchy?"
+    cypher: |
+      MATCH (d:Document)-[:HasComponent]->(s:Section)-[:HasComponent]->(p:Paragraph)
+      RETURN d.id, s.label, s.order, p.ordinal, p.text
+      LIMIT 5
+    expected_relations: [HasComponent]
+
+  - name: "test_topical_tagging"
+    description: "Can we find concepts tagged to paragraphs?"
+    cypher: |
+      MATCH (p:Paragraph)-[:About]->(c:Concept)
+      RETURN p.id, p.text, c.pref_label
+      LIMIT 10
+    expected_relations: [About]
+
+  - name: "test_rule_provenance"
+    description: "Can we trace rules back to source paragraphs with citations?"
+    cypher: |
+      MATCH (r:Rule)-[e:EvidenceOf]->(p:Paragraph)
+      RETURN r.id, r.title, r.article_no, r.normative_effect,
+             p.text, p.page_from, p.page_to, e.quote
+    expected_fields: [article_no, normative_effect, page_from, page_to]
+    expected_relations: [EvidenceOf]
+
+  - name: "test_contract_type_rules"
+    description: "Can we find rules related to specific contract types?"
+    cypher: |
+      MATCH (p:Paragraph)-[:About]->(ct:ContractType),
+            (r:Rule)-[:EvidenceOf]->(p)
+      RETURN ct.pref_label, r.title, r.normative_effect
+    expected_relations: [About, EvidenceOf]
+
+# Closed-loop validation criteria
+validation_criteria:
+  schema_completeness:
+    - "All target_entities from outcome_questions must have corresponding classes in overlay schema"
+    - "All required_relations from outcome_questions must have corresponding edge classes in overlay schema"
+    - "All required_attributes from outcome_questions must exist as slots in entity classes"
+    - "Canonical URIs (DoCO, FaBiO, PROV-O, FIBO, SKOS) must be present in class_uri fields"
+
+  query_executability:
+    - "All validation_queries must execute without errors against generated Pydantic models"
+    - "All expected_fields must be present in query results"
+    - "All expected_relations must be traversable in the knowledge graph"
+
+  outcome_testability:
+    - "Each outcome_question must map to at least one validation_query"
+    - "Validation queries must return non-empty results when test data is provided"
+    - "Structural hierarchy (Document→Section→Paragraph) must be deterministically traversable"
+    - "Rule citations must be traceable to specific paragraph IDs and page ranges"

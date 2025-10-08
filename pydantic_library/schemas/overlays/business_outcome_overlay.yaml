@@ -1,0 +1,522 @@
+id: https://example.org/schemas/sukuk-shariah-compliance-audit
+name: sukuk_shariah_compliance_audit
+description: Schema for auditing Sukuk transactions to ensure adherence to Shariah principles and Islamic finance requirements
+imports:
+  - ../core/provenance
+prefixes:
+  linkml: https://w3id.org/linkml/
+  fabio: http://purl.org/spar/fabio/
+  prov: http://www.w3.org/ns/prov#
+  fibo-sec: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/Bonds/
+  fibo-fbc: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/
+  fibo-fnd: https://spec.edmcouncil.org/fibo/ontology/FND/Law/LegalCore/
+  fibo-reg: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/RegulatoryAgencies/
+  skos: http://www.w3.org/2004/02/skos/core#
+default_prefix: sukuk_shariah_compliance_audit
+
+classes:
+  Sukuk:
+    description: Islamic financial certificate representing ownership interest in an asset or pool of assets
+    class_uri: fibo-sec:Bond
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - identifier
+      - sukuk_name
+      - structure_type
+      - issuance_date
+      - maturity_date
+      - face_value
+      - underlying_asset
+      - issuer_name
+      - shariah_board_approval
+      - has_transactions
+
+  Transaction:
+    description: Financial activity involving the exchange or transfer of Sukuk instruments
+    class_uri: fibo-fbc:Transaction
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - transaction_id
+      - transaction_date
+      - transaction_type
+      - amount
+      - currency
+      - counterparty
+      - settlement_date
+      - sukuk_reference
+      - governed_by_framework
+      - assessed_by_assessment
+
+  Audit:
+    description: Systematic examination process to verify Shariah compliance of Sukuk transactions
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - audit_id
+      - audit_date
+      - audit_type
+      - auditor_name
+      - auditor_organization
+      - audit_scope
+      - audit_methodology
+      - evaluates_assessment
+      - produces_report
+
+  ShariahComplianceFramework:
+    description: Set of Islamic legal principles and rules governing permissible financial activities
+    class_uri: fibo-fnd:Law
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - framework_name
+      - framework_version
+      - issuing_authority
+      - publication_date
+      - effective_date
+      - jurisdiction
+      - key_principles
+      - prohibited_activities
+      - documentation_url
+
+  ComplianceAssessment:
+    description: Evaluation of transaction adherence to Shariah compliance requirements
+    class_uri: fibo-reg:RegulatoryCompliance
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - assessment_id
+      - assessment_date
+      - assessor_name
+      - assessor_credentials
+      - compliance_status
+      - violations_found
+      - violation_details
+      - risk_level
+      - remediation_required
+      - transaction_reference
+
+  AuditReport:
+    description: Formal document detailing audit findings, compliance status, and recommendations
+    class_uri: fabio:Report
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - report_id
+      - report_date
+      - report_title
+      - executive_summary
+      - conclusion
+      - overall_compliance_rating
+      - findings_summary
+      - recommendations
+      - audit_reference
+      - next_review_date
+
+slots:
+  id:
+    description: Unique identifier
+    range: string
+    identifier: true
+    required: true
+
+  identifier:
+    description: Sukuk instrument identifier
+    range: string
+    required: true
+
+  sukuk_name:
+    description: Name of the Sukuk instrument
+    range: string
+    required: true
+
+  structure_type:
+    description: Type of Shariah-compliant structure
+    range: SukukStructureTypeEnum
+    required: true
+
+  issuance_date:
+    description: Date when the Sukuk was issued
+    range: datetime
+    required: true
+
+  maturity_date:
+    description: Date when the Sukuk matures
+    range: datetime
+    required: false
+
+  face_value:
+    description: Face value of the Sukuk
+    range: float
+    required: true
+
+  underlying_asset:
+    description: Asset backing the Sukuk
+    range: string
+    required: true
+
+  issuer_name:
+    description: Name of the Sukuk issuer
+    range: string
+    required: true
+
+  shariah_board_approval:
+    description: Approval status from Shariah board
+    range: boolean
+    required: true
+
+  has_transactions:
+    description: Transactions associated with this Sukuk
+    range: Transaction
+    multivalued: true
+    required: false
+
+  transaction_id:
+    description: Unique identifier for the transaction
+    range: string
+    required: true
+
+  transaction_date:
+    description: Date when the transaction occurred
+    range: datetime
+    required: true
+
+  transaction_type:
+    description: Type of transaction
+    range: TransactionTypeEnum
+    required: true
+
+  amount:
+    description: Transaction amount
+    range: float
+    required: true
+
+  currency:
+    description: Currency code for the transaction
+    range: string
+    required: true
+
+  counterparty:
+    description: Other party in the transaction
+    range: string
+    required: false
+
+  settlement_date:
+    description: Date when the transaction settles
+    range: datetime
+    required: false
+
+  sukuk_reference:
+    description: Reference to the Sukuk instrument
+    range: Sukuk
+    required: true
+
+  governed_by_framework:
+    description: Shariah compliance framework governing this transaction
+    range: ShariahComplianceFramework
+    multivalued: true
+    required: false
+
+  assessed_by_assessment:
+    description: Compliance assessments for this transaction
+    range: ComplianceAssessment
+    multivalued: true
+    required: false
+
+  audit_id:
+    description: Unique identifier for the audit
+    range: string
+    required: true
+
+  audit_date:
+    description: Date when the audit was conducted
+    range: datetime
+    required: true
+
+  audit_type:
+    description: Type of audit performed
+    range: AuditTypeEnum
+    required: true
+
+  auditor_name:
+    description: Name of the auditor
+    range: string
+    required: true
+
+  auditor_organization:
+    description: Organization conducting the audit
+    range: string
+    required: false
+
+  audit_scope:
+    description: Scope of the audit
+    range: string
+    required: false
+
+  audit_methodology:
+    description: Methodology used for the audit
+    range: string
+    required: false
+
+  evaluates_assessment:
+    description: Compliance assessments evaluated by this audit
+    range: ComplianceAssessment
+    multivalued: true
+    required: true
+
+  produces_report:
+    description: Audit report produced by this audit
+    range: AuditReport
+    required: true
+
+  framework_name:
+    description: Name of the Shariah compliance framework
+    range: string
+    required: true
+
+  framework_version:
+    description: Version of the framework
+    range: string
+    required: false
+
+  issuing_authority:
+    description: Authority that issued the framework
+    range: string
+    required: true
+
+  publication_date:
+    description: Date when the framework was published
+    range: datetime
+    required: false
+
+  effective_date:
+    description: Date when the framework became effective
+    range: datetime
+    required: false
+
+  jurisdiction:
+    description: Geographic or organizational jurisdiction
+    range: string
+    required: false
+
+  key_principles:
+    description: Key Shariah principles in the framework
+    range: string
+    multivalued: true
+    required: false
+
+  prohibited_activities:
+    description: Activities prohibited under this framework
+    range: string
+    multivalued: true
+    required: false
+
+  documentation_url:
+    description: URL to framework documentation
+    range: string
+    required: false
+
+  assessment_id:
+    description: Unique identifier for the assessment
+    range: string
+    required: true
+
+  assessment_date:
+    description: Date when the assessment was performed
+    range: datetime
+    required: true
+
+  assessor_name:
+    description: Name of the person performing the assessment
+    range: string
+    required: true
+
+  assessor_credentials:
+    description: Credentials of the assessor
+    range: string
+    required: false
+
+  compliance_status:
+    description: Compliance status result
+    range: ComplianceStatusEnum
+    required: true
+
+  violations_found:
+    description: Number of violations found
+    range: integer
+    required: false
+
+  violation_details:
+    description: Details of violations found
+    range: string
+    multivalued: true
+    required: false
+
+  risk_level:
+    description: Risk level assessment
+    range: RiskLevelEnum
+    required: false
+
+  remediation_required:
+    description: Whether remediation is required
+    range: boolean
+    required: false
+
+  transaction_reference:
+    description: Reference to the transaction assessed
+    range: Transaction
+    required: true
+
+  report_id:
+    description: Unique identifier for the report
+    range: string
+    required: true
+
+  report_date:
+    description: Date when the report was generated
+    range: datetime
+    required: true
+
+  report_title:
+    description: Title of the audit report
+    range: string
+    required: true
+
+  executive_summary:
+    description: Executive summary of the report
+    range: string
+    required: false
+
+  conclusion:
+    description: Overall conclusion of the audit
+    range: string
+    required: true
+
+  overall_compliance_rating:
+    description: Overall compliance rating
+    range: ComplianceRatingEnum
+    required: true
+
+  findings_summary:
+    description: Summary of audit findings
+    range: string
+    required: false
+
+  recommendations:
+    description: Recommendations from the audit
+    range: string
+    multivalued: true
+    required: false
+
+  audit_reference:
+    description: Reference to the audit that produced this report
+    range: Audit
+    required: true
+
+  next_review_date:
+    description: Date for next review
+    range: datetime
+    required: false
+
+enums:
+  SukukStructureTypeEnum:
+    description: Types of Shariah-compliant Sukuk structures
+    permissible_values:
+      IJARA:
+        description: Lease-based Sukuk
+      MUDARABA:
+        description: Profit-sharing partnership Sukuk
+      MUSHARAKA:
+        description: Joint venture partnership Sukuk
+      MURABAHA:
+        description: Cost-plus financing Sukuk
+      SALAM:
+        description: Forward sale Sukuk
+      ISTISNA:
+        description: Manufacturing contract Sukuk
+      WAKALA:
+        description: Agency-based Sukuk
+      HYBRID:
+        description: Combination of multiple structures
+
+  TransactionTypeEnum:
+    description: Types of Sukuk transactions
+    permissible_values:
+      ISSUANCE:
+        description: Initial issuance of Sukuk
+      PURCHASE:
+        description: Purchase of Sukuk
+      SALE:
+        description: Sale of Sukuk
+      TRANSFER:
+        description: Transfer of Sukuk ownership
+      REDEMPTION:
+        description: Redemption at maturity
+      COUPON_PAYMENT:
+        description: Periodic profit distribution
+      RESTRUCTURING:
+        description: Restructuring of Sukuk terms
+
+  AuditTypeEnum:
+    description: Types of Shariah compliance audits
+    permissible_values:
+      INITIAL:
+        description: Initial compliance audit
+      PERIODIC:
+        description: Regular periodic audit
+      SPECIAL:
+        description: Special investigation audit
+      FOLLOW_UP:
+        description: Follow-up audit after violations
+      COMPREHENSIVE:
+        description: Comprehensive full-scope audit
+      TARGETED:
+        description: Targeted audit of specific aspects
+
+  ComplianceStatusEnum:
+    description: Compliance status values
+    permissible_values:
+      COMPLIANT:
+        description: Fully compliant with Shariah principles
+      NON_COMPLIANT:
+        description: Not compliant with Shariah principles
+      PARTIALLY_COMPLIANT:
+        description: Partially compliant with minor issues
+      PENDING_REVIEW:
+        description: Assessment pending further review
+      UNDER_REMEDIATION:
+        description: Non-compliance being remediated
+
+  RiskLevelEnum:
+    description: Risk level classifications
+    permissible_values:
+      LOW:
+        description: Low risk to Shariah compliance
+      MEDIUM:
+        description: Medium risk to Shariah compliance
+      HIGH:
+        description: High risk to Shariah compliance
+      CRITICAL:
+        description: Critical risk requiring immediate action
+
+  ComplianceRatingEnum:
+    description: Overall compliance ratings
+    permissible_values:
+      EXCELLENT:
+        description: Excellent compliance with no issues
+      SATISFACTORY:
+        description: Satisfactory compliance with minor issues
+      NEEDS_IMPROVEMENT:
+        description: Compliance needs improvement
+      UNSATISFACTORY:
+        description: Unsatisfactory compliance
+      FAILED:
+        description: Failed to meet compliance requirements

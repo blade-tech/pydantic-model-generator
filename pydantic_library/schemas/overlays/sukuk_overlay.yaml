@@ -1,0 +1,574 @@
+id: https://example.org/schemas/sukuk-shariah-compliance-audit
+name: sukuk_shariah_compliance_audit
+description: Schema for auditing Sukuk transactions to ensure adherence to Shariah principles and generate compliance reports
+imports:
+  - ../core/provenance
+prefixes:
+  linkml: https://w3id.org/linkml/
+  fabio: http://purl.org/spar/fabio/
+  prov: http://www.w3.org/ns/prov#
+  fibo-sec: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/Bonds/
+  fibo-fbc: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/
+  fibo-law: https://spec.edmcouncil.org/fibo/ontology/FND/Law/LegalCore/
+  skos: http://www.w3.org/2004/02/skos/core#
+default_prefix: sukuk_shariah_compliance_audit
+
+classes:
+  Sukuk:
+    description: Islamic financial certificate representing ownership in an underlying asset
+    class_uri: fibo-sec:Bond
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - identifier
+      - sukuk_type
+      - issuance_date
+      - maturity_date
+      - face_value
+      - underlying_asset
+      - issuer_name
+      - shariah_board_approval
+      - structure_type
+
+  Transaction:
+    description: Financial activity involving the issuance, trading, or settlement of Sukuk
+    class_uri: fibo-fbc:FinancialTransaction
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - transaction_id
+      - transaction_date
+      - transaction_type
+      - sukuk_identifier
+      - counterparty
+      - transaction_amount
+      - settlement_date
+      - transaction_status
+      - currency
+
+  Audit:
+    description: Systematic examination of Sukuk transactions for Shariah compliance
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - audit_id
+      - audit_period
+      - audit_start_date
+      - audit_end_date
+      - auditor_name
+      - auditor_organization
+      - audit_scope
+      - audit_type
+      - shariah_board_members
+
+  ComplianceAssessment:
+    description: Evaluation activity determining conformance to Shariah principles
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - assessment_id
+      - assessment_date
+      - compliance_status
+      - transaction_id
+      - assessor_name
+      - violation_details
+      - severity_level
+      - remediation_required
+      - remediation_deadline
+
+  ShariahComplianceFramework:
+    description: Regulatory framework defining Islamic finance principles and requirements
+    class_uri: skos:Concept
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - framework_name
+      - framework_version
+      - issuing_authority
+      - effective_date
+      - jurisdiction
+      - framework_scope
+      - update_frequency
+      - reference_document
+
+  AuditReport:
+    description: Document containing findings, assessments, and recommendations from audit
+    class_uri: fabio:Report
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - report_id
+      - report_date
+      - audit_id
+      - overall_compliance
+      - total_transactions_reviewed
+      - compliant_transactions_count
+      - non_compliant_transactions_count
+      - report_summary
+      - recommendations
+      - next_audit_date
+
+  ComplianceRule:
+    description: Specific constraint or requirement derived from Shariah principles
+    class_uri: fibo-law:Law
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - rule_id
+      - rule_name
+      - rule_description
+      - category
+      - framework_reference
+      - applicable_sukuk_types
+      - enforcement_level
+      - penalty_description
+      - rule_source
+
+slots:
+  id:
+    description: Unique identifier
+    range: string
+    identifier: true
+    required: true
+
+  identifier:
+    description: Business identifier for the Sukuk instrument
+    range: string
+    required: true
+
+  sukuk_type:
+    description: Type of Sukuk structure
+    range: SukukTypeEnum
+    required: true
+
+  issuance_date:
+    description: Date when the Sukuk was issued
+    range: date
+    required: true
+
+  maturity_date:
+    description: Date when the Sukuk matures
+    range: date
+    required: true
+
+  face_value:
+    description: Nominal value of the Sukuk
+    range: float
+    required: true
+
+  underlying_asset:
+    description: Asset backing the Sukuk
+    range: string
+    required: true
+
+  issuer_name:
+    description: Name of the entity issuing the Sukuk
+    range: string
+    required: true
+
+  shariah_board_approval:
+    description: Approval status from Shariah board
+    range: boolean
+    required: true
+
+  structure_type:
+    description: Structural classification of the Sukuk
+    range: string
+    required: false
+
+  transaction_id:
+    description: Unique identifier for the transaction
+    range: string
+    required: true
+
+  transaction_date:
+    description: Date when the transaction occurred
+    range: datetime
+    required: true
+
+  transaction_type:
+    description: Type of transaction
+    range: TransactionTypeEnum
+    required: true
+
+  sukuk_identifier:
+    description: Reference to the Sukuk involved in the transaction
+    range: string
+    required: true
+
+  counterparty:
+    description: Other party involved in the transaction
+    range: string
+    required: true
+
+  transaction_amount:
+    description: Monetary amount of the transaction
+    range: float
+    required: true
+
+  settlement_date:
+    description: Date when the transaction settles
+    range: date
+    required: true
+
+  transaction_status:
+    description: Current status of the transaction
+    range: TransactionStatusEnum
+    required: true
+
+  currency:
+    description: Currency of the transaction
+    range: string
+    required: true
+
+  audit_id:
+    description: Unique identifier for the audit
+    range: string
+    required: true
+
+  audit_period:
+    description: Time period covered by the audit
+    range: string
+    required: true
+
+  audit_start_date:
+    description: Start date of the audit period
+    range: date
+    required: true
+
+  audit_end_date:
+    description: End date of the audit period
+    range: date
+    required: true
+
+  auditor_name:
+    description: Name of the lead auditor
+    range: string
+    required: true
+
+  auditor_organization:
+    description: Organization conducting the audit
+    range: string
+    required: true
+
+  audit_scope:
+    description: Scope and boundaries of the audit
+    range: string
+    required: true
+
+  audit_type:
+    description: Type of audit being conducted
+    range: AuditTypeEnum
+    required: true
+
+  shariah_board_members:
+    description: List of Shariah board members involved
+    range: string
+    multivalued: true
+    required: false
+
+  assessment_id:
+    description: Unique identifier for the compliance assessment
+    range: string
+    required: true
+
+  assessment_date:
+    description: Date when the assessment was performed
+    range: datetime
+    required: true
+
+  compliance_status:
+    description: Result of the compliance assessment
+    range: ComplianceStatusEnum
+    required: true
+
+  assessor_name:
+    description: Name of the person performing the assessment
+    range: string
+    required: true
+
+  violation_details:
+    description: Details of any compliance violations found
+    range: string
+    required: false
+
+  severity_level:
+    description: Severity of the compliance issue
+    range: SeverityLevelEnum
+    required: false
+
+  remediation_required:
+    description: Whether remediation action is required
+    range: boolean
+    required: true
+
+  remediation_deadline:
+    description: Deadline for completing remediation
+    range: date
+    required: false
+
+  framework_name:
+    description: Name of the Shariah compliance framework
+    range: string
+    required: true
+
+  framework_version:
+    description: Version number of the framework
+    range: string
+    required: true
+
+  issuing_authority:
+    description: Authority that issued the framework
+    range: string
+    required: true
+
+  effective_date:
+    description: Date when the framework becomes effective
+    range: date
+    required: true
+
+  jurisdiction:
+    description: Geographic or legal jurisdiction of the framework
+    range: string
+    required: true
+
+  framework_scope:
+    description: Scope of application for the framework
+    range: string
+    required: true
+
+  update_frequency:
+    description: How often the framework is updated
+    range: string
+    required: false
+
+  reference_document:
+    description: Reference to the official framework document
+    range: string
+    required: false
+
+  report_id:
+    description: Unique identifier for the audit report
+    range: string
+    required: true
+
+  report_date:
+    description: Date when the report was generated
+    range: date
+    required: true
+
+  overall_compliance:
+    description: Overall compliance rating from the audit
+    range: ComplianceStatusEnum
+    required: true
+
+  total_transactions_reviewed:
+    description: Total number of transactions reviewed in the audit
+    range: integer
+    required: true
+
+  compliant_transactions_count:
+    description: Number of transactions found to be compliant
+    range: integer
+    required: true
+
+  non_compliant_transactions_count:
+    description: Number of transactions found to be non-compliant
+    range: integer
+    required: true
+
+  report_summary:
+    description: Executive summary of the audit findings
+    range: string
+    required: true
+
+  recommendations:
+    description: Recommendations for improving compliance
+    range: string
+    multivalued: true
+    required: false
+
+  next_audit_date:
+    description: Scheduled date for the next audit
+    range: date
+    required: false
+
+  rule_id:
+    description: Unique identifier for the compliance rule
+    range: string
+    required: true
+
+  rule_name:
+    description: Name of the compliance rule
+    range: string
+    required: true
+
+  rule_description:
+    description: Detailed description of the compliance rule
+    range: string
+    required: true
+
+  category:
+    description: Category classification of the rule
+    range: RuleCategoryEnum
+    required: true
+
+  framework_reference:
+    description: Reference to the framework defining this rule
+    range: string
+    required: true
+
+  applicable_sukuk_types:
+    description: Types of Sukuk to which this rule applies
+    range: SukukTypeEnum
+    multivalued: true
+    required: true
+
+  enforcement_level:
+    description: Level of enforcement for the rule
+    range: EnforcementLevelEnum
+    required: true
+
+  penalty_description:
+    description: Description of penalties for rule violation
+    range: string
+    required: false
+
+  rule_source:
+    description: Source authority for the rule
+    range: string
+    required: true
+
+enums:
+  SukukTypeEnum:
+    description: Types of Sukuk structures
+    permissible_values:
+      IJARA:
+        description: Lease-based Sukuk
+      MUDARABA:
+        description: Partnership-based Sukuk
+      MUSHARAKA:
+        description: Joint venture Sukuk
+      MURABAHA:
+        description: Cost-plus financing Sukuk
+      SALAM:
+        description: Forward sale Sukuk
+      ISTISNA:
+        description: Manufacturing contract Sukuk
+      WAKALA:
+        description: Agency-based Sukuk
+      HYBRID:
+        description: Combination of multiple structures
+
+  TransactionTypeEnum:
+    description: Types of Sukuk transactions
+    permissible_values:
+      ISSUANCE:
+        description: Initial issuance of Sukuk
+      PURCHASE:
+        description: Purchase of existing Sukuk
+      SALE:
+        description: Sale of Sukuk holdings
+      REDEMPTION:
+        description: Redemption at maturity
+      COUPON_PAYMENT:
+        description: Periodic profit distribution
+      TRANSFER:
+        description: Transfer of ownership
+
+  TransactionStatusEnum:
+    description: Status of a transaction
+    permissible_values:
+      PENDING:
+        description: Transaction is pending
+      SETTLED:
+        description: Transaction has settled
+      CANCELLED:
+        description: Transaction was cancelled
+      FAILED:
+        description: Transaction failed
+      UNDER_REVIEW:
+        description: Transaction under compliance review
+
+  AuditTypeEnum:
+    description: Types of audits
+    permissible_values:
+      PERIODIC:
+        description: Regular scheduled audit
+      SPECIAL:
+        description: Special purpose audit
+      COMPLIANCE:
+        description: Compliance-focused audit
+      FORENSIC:
+        description: Detailed investigative audit
+      PRE_ISSUANCE:
+        description: Audit before Sukuk issuance
+
+  ComplianceStatusEnum:
+    description: Compliance assessment results
+    permissible_values:
+      COMPLIANT:
+        description: Fully compliant with Shariah principles
+      NON_COMPLIANT:
+        description: Violates Shariah principles
+      PARTIALLY_COMPLIANT:
+        description: Partially compliant with minor issues
+      UNDER_REVIEW:
+        description: Assessment in progress
+      REMEDIATED:
+        description: Previously non-compliant, now remediated
+
+  SeverityLevelEnum:
+    description: Severity levels for compliance violations
+    permissible_values:
+      CRITICAL:
+        description: Critical violation requiring immediate action
+      HIGH:
+        description: High severity violation
+      MEDIUM:
+        description: Medium severity violation
+      LOW:
+        description: Low severity violation
+      INFORMATIONAL:
+        description: Informational finding, not a violation
+
+  RuleCategoryEnum:
+    description: Categories of compliance rules
+    permissible_values:
+      RIBA_PROHIBITION:
+        description: Rules prohibiting interest (riba)
+      GHARAR_PROHIBITION:
+        description: Rules prohibiting excessive uncertainty
+      ASSET_BACKING:
+        description: Rules requiring asset backing
+      PROFIT_SHARING:
+        description: Rules governing profit distribution
+      DOCUMENTATION:
+        description: Documentation requirements
+      GOVERNANCE:
+        description: Governance and oversight rules
+      PROHIBITED_ACTIVITIES:
+        description: Rules on prohibited business activities
+      STRUCTURAL:
+        description: Structural requirements for Sukuk
+
+  EnforcementLevelEnum:
+    description: Enforcement levels for compliance rules
+    permissible_values:
+      MANDATORY:
+        description: Mandatory compliance required
+      RECOMMENDED:
+        description: Recommended best practice
+      OPTIONAL:
+        description: Optional guidance
+      CONDITIONAL:
+        description: Required under specific conditions

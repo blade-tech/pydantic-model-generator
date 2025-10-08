@@ -1,0 +1,576 @@
+# Schema Alignment Analysis
+
+## Executive Summary
+
+**Date:** 2025-10-06
+**Files Analyzed:**
+- `v1_to_v2_migration/schemas/business_base.yaml`
+- `v1_to_v2_migration/schemas/business_model_v2.yaml`
+- `v1_to_v2_migration/MODULAR_PYDANTIC_ARCHITECTURE.md`
+- `UNIFIED_ARCHITECTURE_STRATEGY.md`
+
+**Status:** ❌ **CRITICAL MISALIGNMENT**
+
+The schemas in `v1_to_v2_migration/schemas/` are **completely out of alignment** with the outcome-driven strategy.
+
+---
+
+## Critical Issues
+
+### Issue 1: Domain-Based Schema (Not Outcome-Based)
+
+**Current Schema:** `business_model_v2.yaml`
+```yaml
+name: business_model_v2
+description: Enhanced V2 schema with provenance mixins
+
+classes:
+  BusinessOutcome: ...
+  BusinessDecision: ...
+  BusinessTask: ...
+  BusinessHandoff: ...
+  BusinessClaim: ...
+  BusinessContradiction: ...
+  BusinessPrediction: ...
+  Customer: ...
+  Project: ...
+  Actor: ...
+```
+
+**Problem:** ❌ This is a **monolithic domain schema** with 10+ entity classes
+- Contains ALL business entities in one schema
+- Not minimal (exceeds max 12 classes guideline)
+- Not question-driven
+- No OutcomeSpec that generated this
+
+**Expected (Outcome-Driven):**
+```yaml
+# specs/business_outcomes_tracking.yaml (OutcomeSpec)
+outcome_name: Business Outcomes Tracking
+questions:
+  - What outcomes are blocked and why?
+  - Which tasks fulfill which outcomes?
+  - Who is responsible for each outcome?
+
+target_entities: [BusinessOutcome, BusinessTask, Actor]  # Max 12
+relations: [Fulfills, BlockedBy, ResponsibleFor]        # Max 10
+
+# Generated: schemas/overlays/business_outcomes_overlay.yaml
+classes:
+  BusinessOutcome:    # Only 3 entities (minimal)
+  BusinessTask:
+  Actor:
+```
+
+**Impact:**
+- Cannot validate sufficiency (no questions defined)
+- Violates minimalism principle (10 entities vs max 12)
+- No closed-loop validation possible
+- Breaks outcome-driven architecture
+
+---
+
+### Issue 2: Missing Core Infrastructure Schemas
+
+**What's Missing:**
+
+```
+❌ Missing: schemas/core/
+  ❌ Missing: schemas/core/provenance.yaml      # ProvenanceFields mixin
+  ❌ Missing: schemas/core/types.yaml           # Email, Confidence01 types
+  ❌ Missing: schemas/core/episodes.yaml        # Episode model
+  ❌ Missing: schemas/core/base.yaml            # Base classes
+
+❌ Missing: schemas/shared/
+  ❌ Missing: schemas/shared/temporal.yaml      # DateRange, Period
+  ❌ Missing: schemas/shared/identity.yaml      # Person, Organization
+  ❌ Missing: schemas/shared/financial.yaml     # Money, Currency
+```
+
+**Current State:**
+```
+✅ Exists: v1_to_v2_migration/schemas/business_model_v2.yaml
+   - Contains ProvenanceFields mixin (should be in core/)
+   - Contains Email, E164Phone, Confidence01 (should be in core/types.yaml)
+   - Contains Actor class (should be in shared/identity.yaml)
+```
+
+**Problem:** Everything is in ONE monolithic schema instead of modular core/shared/overlays structure
+
+---
+
+### Issue 3: MODULAR_PYDANTIC_ARCHITECTURE.md is Outdated
+
+**Document Recommendation (Lines 66-89):**
+```
+graphmodels/
+├── core/                          # Layer 1: Infrastructure
+│   ├── base.py
+│   ├── provenance.py
+│   ├── types.py
+│   └── ...
+└── domains/                       # Layer 2: Domain Logic  ❌ WRONG
+    ├── [domain_name]/            # ❌ Should be outcome-based
+```
+
+**Expected (From UNIFIED_ARCHITECTURE_STRATEGY.md):**
+```
+graphmodels/
+├── core/                          # Universal infrastructure
+├── shared/                        # Cross-outcome reusable
+└── overlays/                      # ✅ Generated per outcome
+    ├── business_outcomes/
+    ├── aaoifi_standards/
+    └── murabaha_audit/
+```
+
+**Problem:** MODULAR_PYDANTIC_ARCHITECTURE.md contradicts UNIFIED_ARCHITECTURE_STRATEGY.md
+
+---
+
+### Issue 4: No OutcomeSpecs Exist
+
+**Expected Directory Structure:**
+```
+specs/
+├── business_outcomes_tracking.yaml    ❌ Does not exist
+├── aaoifi_standards_extraction.yaml   ❌ Does not exist
+└── murabaha_audit.yaml                ❌ Does not exist
+```
+
+**Current State:**
+```
+❌ No specs/ directory
+❌ No OutcomeSpec files
+❌ No Evidence Query Plans (EQP)
+```
+
+**Problem:** Without OutcomeSpecs, cannot use agent pipeline to generate schemas
+
+---
+
+## Detailed Comparison
+
+### What the Strategy Says (UNIFIED_ARCHITECTURE_STRATEGY.md)
+
+#### Directory Structure (Lines 92-174)
+```
+project_root/
+├── specs/                             # ✅ OutcomeSpecs (input)
+│   ├── aaoifi_standards_extraction.yaml
+│   ├── business_outcomes_tracking.yaml
+│   └── contract_compliance_check.yaml
+│
+├── schemas/
+│   ├── core/                          # ✅ Universal infrastructure
+│   │   ├── base.yaml
+│   │   ├── provenance.yaml
+│   │   ├── episodes.yaml
+│   │   └── types.yaml
+│   │
+│   ├── shared/                        # ✅ Cross-outcome reusable
+│   │   ├── temporal.yaml
+│   │   ├── identity.yaml
+│   │   └── financial.yaml
+│   │
+│   └── overlays/                      # ✅ GENERATED by agent
+│       ├── aaoifi_standards_overlay.yaml
+│       ├── business_outcomes_overlay.yaml
+│       └── contract_compliance_overlay.yaml
+```
+
+#### Key Principles (Lines 80-86)
+```markdown
+Each spec is minimal (max 12 classes, max 10 edges) and question-driven.
+
+**Key Insight**: Don't create `domains/business/` and `domains/aaoifi/`
+upfront. Instead, create **OutcomeSpecs** that generate focused schemas.
+```
+
+### What Actually Exists
+
+#### Current Directory Structure
+```
+v1_to_v2_migration/
+└── schemas/
+    ├── business_base.yaml              # ❌ V1 schema (309 lines)
+    ├── business_model_v2.yaml          # ❌ Monolithic V2 (753 lines)
+    └── v1_schema.json                  # ❌ Original V1 JSON
+
+❌ No specs/
+❌ No schemas/core/
+❌ No schemas/shared/
+❌ No schemas/overlays/
+```
+
+#### Current Schema Content
+```yaml
+# business_model_v2.yaml (753 lines - TOO LARGE)
+classes:
+  # Provenance mixins (should be schemas/core/provenance.yaml)
+  ProvenanceFields: ...
+  EdgeProvenanceFields: ...
+
+  # Entities (should be in overlays/)
+  BusinessOutcome: ...        # 1
+  BusinessDecision: ...       # 2
+  BusinessTask: ...           # 3
+  BusinessHandoff: ...        # 4
+  BusinessClaim: ...          # 5
+  BusinessContradiction: ...  # 6
+  BusinessPrediction: ...     # 7
+  Customer: ...               # 8
+  Project: ...                # 9
+  Actor: ...                  # 10  ← Exceeds reasonable outcome size
+
+  # Edges (10 edge types - at max limit)
+  Requires: ...
+  Fulfills: ...
+  BlockedBy: ...
+  SupportedBy: ...
+  Transfers: ...
+  Threats: ...
+  DerivedFrom: ...
+  AssignedTo: ...
+  ResponsibleFor: ...
+  DependsOn: ...
+```
+
+**Problem:** One monolithic schema instead of modular outcome-driven overlays
+
+---
+
+## Gap Analysis Table
+
+| Component | Expected (Strategy) | Actual (Implementation) | Status |
+|-----------|---------------------|-------------------------|--------|
+| **OutcomeSpecs** | `specs/*.yaml` | Does not exist | ❌ MISSING |
+| **Core Schemas** | `schemas/core/provenance.yaml` | Embedded in business_model_v2.yaml | ❌ WRONG LOCATION |
+| **Core Types** | `schemas/core/types.yaml` | Embedded in business_model_v2.yaml | ❌ WRONG LOCATION |
+| **Shared Schemas** | `schemas/shared/identity.yaml` | Actor in business_model_v2.yaml | ❌ WRONG LOCATION |
+| **Overlay Schemas** | `schemas/overlays/business_outcomes_overlay.yaml` | business_model_v2.yaml (not overlay) | ❌ WRONG PATTERN |
+| **Schema Size** | Max 12 classes per overlay | 10 classes in one schema | ⚠️ AT LIMIT |
+| **Generation** | Agent-generated from specs | Hand-written monolithic | ❌ MANUAL |
+| **Evidence Query Plan** | `artifacts/eqp/*.json` | Does not exist | ❌ MISSING |
+
+---
+
+## Why This Matters
+
+### 1. Cannot Use Agent Pipeline
+
+**Current State:**
+```bash
+# Cannot run agent pipeline because:
+❌ No OutcomeSpec to feed to ontology_retriever.py
+❌ No questions to generate Evidence Query Plan
+❌ Schema not generated from agent (manually written)
+```
+
+**Expected Workflow:**
+```bash
+# Should be able to run:
+python -m agents.run_pipeline specs/business_outcomes_tracking.yaml
+
+# Agent would:
+1. Read OutcomeSpec (questions)
+2. Retrieve ontologies (FIBO, Schema.org)
+3. Generate minimal schema (max 12 classes)
+4. Create Evidence Query Plan
+5. Generate Pydantic models
+```
+
+**Impact:** Agent pipeline is unusable with current schemas
+
+---
+
+### 2. Cannot Validate Sufficiency
+
+**Without Closed-Loop Validation:**
+```
+❌ No questions defined → Cannot test if schema answers questions
+❌ No Evidence Query Plan → Cannot validate entity/edge extraction
+❌ No minimal schema → Cannot prove sufficiency
+```
+
+**With Closed-Loop Validation:**
+```
+✅ OutcomeSpec questions → Schema → EQP → Extraction → Validation
+✅ Automated testing of schema completeness
+✅ Iterative refinement until questions answerable
+```
+
+**Impact:** No way to verify schema is sufficient for intended use
+
+---
+
+### 3. Schema is Not Minimal
+
+**Current Schema:**
+- 10 entity classes (at limit)
+- 10 edge classes (at max)
+- 753 lines (too large)
+
+**From UNIFIED_ARCHITECTURE_STRATEGY.md (Line 85-86):**
+> Each spec is minimal (max 12 classes, max 10 edges) and question-driven.
+
+**Problem:** Schema contains everything instead of only what's needed for specific questions
+
+---
+
+### 4. No Traceability
+
+**Cannot Trace:**
+```
+❌ Schema → OutcomeSpec (which questions does this answer?)
+❌ Entity → Outcome (why does BusinessClaim exist?)
+❌ Validation → Questions (how do we test this?)
+```
+
+**Expected Traceability:**
+```
+specs/business_outcomes_tracking.yaml
+  → "What outcomes are blocked?"
+  → Requires entities: [BusinessOutcome, BusinessTask]
+  → Requires edges: [BlockedBy]
+  → schemas/overlays/business_outcomes_overlay.yaml
+  → tests/test_business_outcomes_validation.py
+```
+
+---
+
+## Remediation Strategy
+
+### Option 1: Full Refactor (Recommended)
+
+**Step 1: Create OutcomeSpecs (2-3 hours)**
+
+```yaml
+# specs/business_outcomes_tracking.yaml
+outcome_name: Business Outcomes Tracking
+description: Track and validate business outcomes and their blockers
+
+questions:
+  - What outcomes are blocked and why?
+  - Which tasks fulfill which outcomes?
+  - Who is responsible for each outcome?
+
+ontologies:
+  - prefix: schema
+    focus: Action, Person, Organization
+  - prefix: prov
+    focus: Entity, Activity
+
+target_entities:
+  - BusinessOutcome
+  - BusinessTask
+  - Actor
+
+relations:
+  - Fulfills (Task → Outcome)
+  - BlockedBy (Outcome → Task)
+  - ResponsibleFor (Actor → Outcome)
+```
+
+**Step 2: Extract Core Schemas (2-3 hours)**
+
+```bash
+# Create core infrastructure
+mkdir -p schemas/core schemas/shared schemas/overlays
+
+# Extract from business_model_v2.yaml:
+# schemas/core/provenance.yaml ← ProvenanceFields, EdgeProvenanceFields
+# schemas/core/types.yaml ← Email, E164Phone, Confidence01
+# schemas/shared/identity.yaml ← Actor class
+```
+
+**Step 3: Run Agent Pipeline (1 hour)**
+
+```bash
+# Generate outcome-driven overlays
+python -m agents.run_pipeline specs/business_outcomes_tracking.yaml
+# Creates:
+# - schemas/overlays/business_outcomes_overlay.yaml (minimal)
+# - artifacts/eqp/business_outcomes_eqp.json (validation tests)
+# - generated/pydantic/overlays/business_outcomes_models.py
+```
+
+**Step 4: Validate (1 hour)**
+
+```bash
+# Test closed-loop validation
+python tests/test_outcome_validation.py business_outcomes
+# Verifies schema can answer all questions
+```
+
+**Total Effort:** 6-8 hours
+
+---
+
+### Option 2: Incremental Alignment (Hybrid)
+
+**Step 1: Rename & Reorganize (2 hours)**
+
+```bash
+# Move current schema to overlays (as-is)
+mkdir -p schemas/overlays
+mv v1_to_v2_migration/schemas/business_model_v2.yaml \
+   schemas/overlays/business_overlay.yaml
+
+# Extract core (future work)
+# Note: Keep current monolithic structure temporarily
+```
+
+**Step 2: Create Minimal OutcomeSpec (1 hour)**
+
+```yaml
+# Reverse-engineer from existing schema
+# specs/business_all.yaml (temporary)
+outcome_name: Business Domain (Legacy)
+description: Complete business domain entities
+
+questions:
+  - What are all business entities?  # Generic placeholder
+
+target_entities: [BusinessOutcome, BusinessDecision, ...]  # All 10
+relations: [Requires, Fulfills, ...]  # All 10
+```
+
+**Step 3: Document Temporary State (30 min)**
+
+```markdown
+# MIGRATION_STATUS.md
+Current state: Legacy monolithic schema
+Target state: Outcome-driven overlays
+Status: Phase 1 - Renamed but not refactored
+```
+
+**Total Effort:** 3.5 hours
+
+---
+
+## Comparison Matrix
+
+| Aspect | Option 1: Full Refactor | Option 2: Incremental |
+|--------|-------------------------|----------------------|
+| **Alignment** | ✅ Complete | ⚠️ Partial |
+| **Agent Pipeline** | ✅ Usable | ❌ Not usable |
+| **Closed-Loop** | ✅ Enabled | ❌ Not enabled |
+| **Effort** | ⚠️ 6-8 hours | ✅ 3.5 hours |
+| **Risk** | ⚠️ Moderate | ✅ Low |
+| **Future-Proof** | ✅ Yes | ❌ Technical debt |
+
+---
+
+## Recommendation: Option 1 (Full Refactor)
+
+**Rationale:**
+
+1. **Current Schemas are Unusable with Agent Pipeline**
+   - No OutcomeSpecs → Agent has no input
+   - No questions → No Evidence Query Plans
+   - Monolithic → Violates minimalism principle
+
+2. **Investment is One-Time**
+   - 6-8 hours to align properly
+   - Future overlays are auto-generated (< 1 hour each)
+
+3. **Enables Key Architecture Benefits**
+   - ✅ Closed-loop validation
+   - ✅ Automated schema generation
+   - ✅ Traceability from questions to tests
+   - ✅ Minimalism enforcement via Instructor
+
+4. **Current Schema is Migration Artifact**
+   - `business_model_v2.yaml` was created for V1→V2 migration testing
+   - Not designed as production outcome-driven overlay
+   - Should be replaced, not adapted
+
+---
+
+## MODULAR_PYDANTIC_ARCHITECTURE.md Status
+
+**Current Document:** ❌ OUTDATED
+
+**Issues:**
+1. Recommends `graphmodels/domains/` (Line 27) → Should be `graphmodels/overlays/`
+2. Shows domain-based organization → Should show outcome-based
+3. Does not mention OutcomeSpecs → Critical omission
+4. Does not mention agent pipeline → Architectural mismatch
+5. Section 3 "LinkML Schema Modularization" → Correct pattern but domain-focused
+
+**Recommendation:**
+
+### Option A: Update Document (Recommended)
+- Rename `domains/` → `overlays/` throughout
+- Add section on OutcomeSpecs (before schemas)
+- Add section on agent pipeline integration
+- Update directory structure examples
+- Keep: Sections on mixins, registries, plugin pattern (still valid)
+
+### Option B: Archive Document
+- Move to `v1_to_v2_migration/archive/MODULAR_PYDANTIC_ARCHITECTURE_OLD.md`
+- Reference in UNIFIED_ARCHITECTURE_STRATEGY.md as historical context
+- Note: Superseded by outcome-driven approach
+
+**Prefer Option A** - Core patterns (mixins, registries, plugins) are still valuable
+
+---
+
+## Action Items
+
+### Immediate (This Session)
+1. ✅ Create this alignment analysis document
+2. ⏭️ **Decision Required:** Option 1 (Full Refactor) or Option 2 (Incremental)?
+3. ⏭️ **Decision Required:** Update or Archive MODULAR_PYDANTIC_ARCHITECTURE.md?
+
+### Phase 1 (If Option 1 Chosen)
+1. ⏭️ Create `specs/business_outcomes_tracking.yaml` (OutcomeSpec)
+2. ⏭️ Extract `schemas/core/provenance.yaml`
+3. ⏭️ Extract `schemas/core/types.yaml`
+4. ⏭️ Extract `schemas/shared/identity.yaml`
+5. ⏭️ Run agent pipeline to generate overlay
+
+### Phase 2 (After Phase 1)
+1. ⏭️ Update MODULAR_PYDANTIC_ARCHITECTURE.md
+2. ⏭️ Create closed-loop validation tests
+3. ⏭️ Document agent pipeline usage
+4. ⏭️ Archive old migration schemas
+
+---
+
+## Questions to Resolve
+
+1. **Schema Purpose:** Was `business_model_v2.yaml` intended as production schema or just migration test artifact?
+2. **Breaking Changes:** Are there external dependencies on current schema structure?
+3. **Timeline:** Is 6-8 hour refactor acceptable for alignment?
+4. **Priority:** Which outcome should be created first? (business_outcomes, aaoifi_standards, murabaha_audit)
+
+---
+
+## Summary
+
+**Current State:** ❌ CRITICAL MISALIGNMENT
+
+**Root Cause:**
+- Schemas created for V1→V2 migration testing (manual process)
+- Agent pipeline developed later (outcome-driven)
+- Schemas never refactored to match agent pipeline architecture
+
+**Impact:**
+- Agent pipeline unusable
+- No closed-loop validation
+- No traceability
+- Technical debt accumulating
+
+**Recommendation:**
+- **Option 1: Full Refactor** (6-8 hours, complete alignment)
+- Creates foundation for all future outcome-driven development
+- Enables agent pipeline and closed-loop validation
+- One-time investment with long-term benefits
+
+---
+
+**Document Version:** 1.0
+**Last Updated:** 2025-10-06
+**Status:** ⚠️ **CRITICAL - IMMEDIATE ACTION REQUIRED**

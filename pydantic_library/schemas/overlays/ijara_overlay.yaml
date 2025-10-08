@@ -1,0 +1,526 @@
+id: https://example.org/schemas/ijara-sukuk-transaction-audit
+name: ijara_sukuk_transaction_audit
+description: Schema for tracking and verifying Ijara lease transactions associated with Sukuk Islamic bond instruments, ensuring compliance and traceability of financial activities
+imports:
+  - ../core/provenance
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+  fibo-fbc-dae: https://spec.edmcouncil.org/fibo/ontology/FBC/DebtAndEquities/Debt/
+  fibo-fbc-pas: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/
+  fibo-sec: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/Bonds/
+  fibo-fnd: https://spec.edmcouncil.org/fibo/ontology/FND/Law/LegalCore/
+  skos: http://www.w3.org/2004/02/skos/core#
+default_prefix: ijara_sukuk_transaction_audit
+
+classes:
+  Audit:
+    description: Audit activity tracking verification actions for Ijara transactions
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - audit_id
+      - audit_date
+      - completion_date
+      - audit_type
+      - auditor_name
+      - auditor_organization
+      - audit_scope
+      - findings
+      - recommendations
+      - audit_status
+
+  Ijara:
+    description: Islamic lease contract forming the underlying asset for Sukuk instruments
+    class_uri: fibo-fbc-dae:Lease
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - lease_id
+      - lease_term
+      - start_date
+      - end_date
+      - asset_description
+      - asset_value
+      - rental_amount
+      - payment_frequency
+      - lessee_name
+      - lessor_name
+      - lease_status
+
+  Transaction:
+    description: Financial transaction involving Ijara payments or transfers
+    class_uri: fibo-fbc-pas:Transaction
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - transaction_id
+      - transaction_date
+      - amount
+      - currency
+      - transaction_type
+      - payment_method
+      - payer
+      - payee
+      - description
+      - reference_number
+      - transaction_status
+
+  Sukuk:
+    description: Islamic bond instrument backed by Ijara lease assets
+    class_uri: fibo-sec:Bond
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - sukuk_id
+      - issuance_date
+      - maturity_date
+      - face_value
+      - currency
+      - coupon_rate
+      - issuer_name
+      - trustee_name
+      - underlying_asset_type
+      - total_issuance_amount
+      - sukuk_structure_type
+      - sukuk_status
+
+  AuditProcess:
+    description: Formal verification process for compliance and accuracy of Ijara transactions
+    class_uri: fibo-fnd:LegalProcess
+    mixins:
+      - ProvenanceFields
+    slots:
+      - id
+      - process_id
+      - process_name
+      - process_description
+      - compliance_status
+      - compliance_framework
+      - verification_methodology
+      - process_owner
+      - start_date
+      - end_date
+      - process_version
+      - process_status
+
+slots:
+  id:
+    description: Unique identifier
+    range: string
+    identifier: true
+    required: true
+
+  audit_id:
+    description: Unique identifier for the audit
+    range: string
+    required: true
+
+  audit_date:
+    description: Date when the audit was conducted
+    range: datetime
+    required: true
+
+  completion_date:
+    description: Date when the audit was completed
+    range: datetime
+    required: false
+
+  audit_type:
+    description: Type of audit performed
+    range: AuditTypeEnum
+    required: true
+
+  auditor_name:
+    description: Name of the auditor
+    range: string
+    required: true
+
+  auditor_organization:
+    description: Organization conducting the audit
+    range: string
+    required: false
+
+  audit_scope:
+    description: Scope and boundaries of the audit
+    range: string
+    required: false
+
+  findings:
+    description: Key findings from the audit
+    range: string
+    required: false
+
+  recommendations:
+    description: Recommendations based on audit findings
+    range: string
+    required: false
+
+  audit_status:
+    description: Current status of the audit
+    range: AuditStatusEnum
+    required: true
+
+  lease_id:
+    description: Unique identifier for the Ijara lease
+    range: string
+    required: true
+
+  lease_term:
+    description: Duration of the lease in months
+    range: integer
+    required: true
+
+  start_date:
+    description: Start date of the lease or process
+    range: datetime
+    required: true
+
+  end_date:
+    description: End date of the lease or process
+    range: datetime
+    required: false
+
+  asset_description:
+    description: Description of the leased asset
+    range: string
+    required: true
+
+  asset_value:
+    description: Monetary value of the asset
+    range: float
+    required: true
+
+  rental_amount:
+    description: Rental payment amount for the lease
+    range: float
+    required: true
+
+  payment_frequency:
+    description: Frequency of rental payments
+    range: PaymentFrequencyEnum
+    required: true
+
+  lessee_name:
+    description: Name of the lessee
+    range: string
+    required: true
+
+  lessor_name:
+    description: Name of the lessor
+    range: string
+    required: true
+
+  lease_status:
+    description: Current status of the lease
+    range: LeaseStatusEnum
+    required: true
+
+  transaction_id:
+    description: Unique identifier for the transaction
+    range: string
+    required: true
+
+  transaction_date:
+    description: Date when the transaction occurred
+    range: datetime
+    required: true
+
+  amount:
+    description: Monetary amount of the transaction
+    range: float
+    required: true
+
+  currency:
+    description: Currency code for the transaction
+    range: string
+    required: true
+
+  transaction_type:
+    description: Type of financial transaction
+    range: TransactionTypeEnum
+    required: true
+
+  payment_method:
+    description: Method used for payment
+    range: string
+    required: false
+
+  payer:
+    description: Entity making the payment
+    range: string
+    required: true
+
+  payee:
+    description: Entity receiving the payment
+    range: string
+    required: true
+
+  description:
+    description: Detailed description of the transaction
+    range: string
+    required: false
+
+  reference_number:
+    description: Reference number for the transaction
+    range: string
+    required: false
+
+  transaction_status:
+    description: Current status of the transaction
+    range: TransactionStatusEnum
+    required: true
+
+  sukuk_id:
+    description: Unique identifier for the Sukuk instrument
+    range: string
+    required: true
+
+  issuance_date:
+    description: Date when the Sukuk was issued
+    range: datetime
+    required: true
+
+  maturity_date:
+    description: Maturity date of the Sukuk
+    range: datetime
+    required: true
+
+  face_value:
+    description: Face value of individual Sukuk certificate
+    range: float
+    required: true
+
+  coupon_rate:
+    description: Profit rate for the Sukuk
+    range: float
+    required: false
+
+  issuer_name:
+    description: Name of the Sukuk issuer
+    range: string
+    required: true
+
+  trustee_name:
+    description: Name of the trustee managing the Sukuk
+    range: string
+    required: false
+
+  underlying_asset_type:
+    description: Type of underlying asset backing the Sukuk
+    range: string
+    required: true
+
+  total_issuance_amount:
+    description: Total amount of Sukuk issuance
+    range: float
+    required: true
+
+  sukuk_structure_type:
+    description: Structure type of the Sukuk
+    range: SukukStructureEnum
+    required: true
+
+  sukuk_status:
+    description: Current status of the Sukuk
+    range: SukukStatusEnum
+    required: true
+
+  process_id:
+    description: Unique identifier for the audit process
+    range: string
+    required: true
+
+  process_name:
+    description: Name of the audit process
+    range: string
+    required: true
+
+  process_description:
+    description: Detailed description of the audit process
+    range: string
+    required: false
+
+  compliance_status:
+    description: Compliance status result from the audit process
+    range: ComplianceStatusEnum
+    required: true
+
+  compliance_framework:
+    description: Regulatory or compliance framework applied
+    range: string
+    required: false
+
+  verification_methodology:
+    description: Methodology used for verification
+    range: string
+    required: false
+
+  process_owner:
+    description: Owner or responsible party for the process
+    range: string
+    required: false
+
+  process_version:
+    description: Version of the audit process
+    range: string
+    required: false
+
+  process_status:
+    description: Current status of the audit process
+    range: ProcessStatusEnum
+    required: true
+
+enums:
+  AuditTypeEnum:
+    description: Types of audits performed
+    permissible_values:
+      COMPLIANCE:
+        description: Compliance audit
+      FINANCIAL:
+        description: Financial audit
+      OPERATIONAL:
+        description: Operational audit
+      SHARIAH:
+        description: Shariah compliance audit
+      INTERNAL:
+        description: Internal audit
+      EXTERNAL:
+        description: External audit
+
+  AuditStatusEnum:
+    description: Status values for audits
+    permissible_values:
+      PLANNED:
+        description: Audit is planned
+      IN_PROGRESS:
+        description: Audit is in progress
+      COMPLETED:
+        description: Audit is completed
+      APPROVED:
+        description: Audit is approved
+      CANCELLED:
+        description: Audit is cancelled
+
+  PaymentFrequencyEnum:
+    description: Frequency of payments
+    permissible_values:
+      MONTHLY:
+        description: Monthly payments
+      QUARTERLY:
+        description: Quarterly payments
+      SEMI_ANNUAL:
+        description: Semi-annual payments
+      ANNUAL:
+        description: Annual payments
+      ONE_TIME:
+        description: One-time payment
+
+  LeaseStatusEnum:
+    description: Status values for leases
+    permissible_values:
+      ACTIVE:
+        description: Lease is active
+      PENDING:
+        description: Lease is pending
+      EXPIRED:
+        description: Lease has expired
+      TERMINATED:
+        description: Lease is terminated
+      RENEWED:
+        description: Lease is renewed
+
+  TransactionTypeEnum:
+    description: Types of financial transactions
+    permissible_values:
+      RENTAL_PAYMENT:
+        description: Rental payment transaction
+      PURCHASE:
+        description: Purchase transaction
+      TRANSFER:
+        description: Transfer transaction
+      REFUND:
+        description: Refund transaction
+      PROFIT_DISTRIBUTION:
+        description: Profit distribution
+      PRINCIPAL_REPAYMENT:
+        description: Principal repayment
+
+  TransactionStatusEnum:
+    description: Status values for transactions
+    permissible_values:
+      PENDING:
+        description: Transaction is pending
+      COMPLETED:
+        description: Transaction is completed
+      FAILED:
+        description: Transaction has failed
+      CANCELLED:
+        description: Transaction is cancelled
+      REVERSED:
+        description: Transaction is reversed
+
+  SukukStructureEnum:
+    description: Structure types of Sukuk instruments
+    permissible_values:
+      IJARA:
+        description: Ijara-based Sukuk
+      MUDARABA:
+        description: Mudaraba-based Sukuk
+      MUSHARAKA:
+        description: Musharaka-based Sukuk
+      MURABAHA:
+        description: Murabaha-based Sukuk
+      WAKALA:
+        description: Wakala-based Sukuk
+      HYBRID:
+        description: Hybrid structure Sukuk
+
+  SukukStatusEnum:
+    description: Status values for Sukuk instruments
+    permissible_values:
+      ISSUED:
+        description: Sukuk is issued
+      ACTIVE:
+        description: Sukuk is active
+      MATURED:
+        description: Sukuk has matured
+      REDEEMED:
+        description: Sukuk is redeemed
+      DEFAULTED:
+        description: Sukuk is in default
+      CANCELLED:
+        description: Sukuk is cancelled
+
+  ComplianceStatusEnum:
+    description: Compliance status outcomes
+    permissible_values:
+      COMPLIANT:
+        description: Fully compliant
+      NON_COMPLIANT:
+        description: Non-compliant
+      PARTIALLY_COMPLIANT:
+        description: Partially compliant
+      UNDER_REVIEW:
+        description: Under review
+      NOT_APPLICABLE:
+        description: Not applicable
+
+  ProcessStatusEnum:
+    description: Status values for audit processes
+    permissible_values:
+      DRAFT:
+        description: Process is in draft
+      ACTIVE:
+        description: Process is active
+      SUSPENDED:
+        description: Process is suspended
+      COMPLETED:
+        description: Process is completed
+      ARCHIVED:
+        description: Process is archived

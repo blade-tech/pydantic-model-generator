@@ -64,3 +64,22 @@ logs/
 
 # Neo4j
 .neo4j/
+
+# Demo App
+demo-app/backend/.env
+demo-app/frontend/.env.local
+demo-app/frontend/.next/
+demo-app/frontend/node_modules/
+demo-app/backend/__pycache__/
+demo-app/backend/app/**/__pycache__/
+demo-app/frontend/test-results/
+demo-app/frontend/e2e-results/
+demo-app/frontend/playwright-report/
+
+# Claude Code
+.claude/
+.playwright-mcp/
+
+# Temp files
+nul
+test_output.txt

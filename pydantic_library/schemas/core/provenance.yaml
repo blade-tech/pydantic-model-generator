@@ -1,0 +1,149 @@
+id: https://example.org/core/provenance
+name: core_provenance
+description: Provenance mixins for nodes and edges
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+
+default_prefix: prov
+
+imports:
+  - linkml:types
+
+default_range: string
+
+# ==================================================================
+# PROVENANCE SLOTS
+# ==================================================================
+
+slots:
+  # Identity
+  node_id:
+    range: string
+    description: Stable citation id (deterministic)
+    slot_uri: prov:identifier
+
+  rel_id:
+    range: string
+    description: Stable relationship id (deterministic)
+    slot_uri: prov:identifier
+
+  # Source system
+  prov_system:
+    range: string
+    description: Primary source system (e.g., slack, gdrive, aaoifi_db)
+    slot_uri: prov:wasAttributedTo
+
+  # Source references (Slack)
+  prov_channel_ids:
+    range: string
+    multivalued: true
+    description: Slack channel IDs
+
+  prov_thread_tss:
+    range: string
+    multivalued: true
+    description: Slack thread timestamps
+
+  prov_tss:
+    range: string
+    multivalued: true
+    description: Slack message timestamps
+
+  prov_permalinks:
+    range: string
+    multivalued: true
+    description: Slack permalinks
+
+  # Source references (Documents)
+  prov_file_ids:
+    range: string
+    multivalued: true
+    description: Document/file identifiers
+
+  prov_rev_ids:
+    range: string
+    multivalued: true
+    description: Document revision IDs
+
+  prov_text_sha1s:
+    range: string
+    multivalued: true
+    description: SHA1 hashes of source text
+
+  # Document structure (DoCO)
+  doco_types:
+    range: string
+    multivalued: true
+    description: Document component types (section, paragraph, etc.)
+
+  doco_paths:
+    range: string
+    multivalued: true
+    description: Document structural paths
+
+  page_nums:
+    range: integer
+    multivalued: true
+    description: Page numbers
+
+  # Support tracking
+  support_count:
+    range: integer
+    description: Number of supporting evidences
+    minimum_value: 0
+
+  # Derivation (for edges)
+  derived:
+    range: boolean
+    description: Whether derived vs directly extracted
+
+  derivation_rule:
+    range: string
+    description: Rule or method used for derivation
+
+# ==================================================================
+# PROVENANCE MIXINS
+# ==================================================================
+
+classes:
+  ProvenanceFields:
+    mixin: true
+    class_uri: prov:Entity
+    description: Provenance mixin for nodes
+    slots:
+      - node_id
+      - prov_system
+      - prov_channel_ids
+      - prov_thread_tss
+      - prov_tss
+      - prov_permalinks
+      - prov_file_ids
+      - prov_rev_ids
+      - prov_text_sha1s
+      - doco_types
+      - doco_paths
+      - page_nums
+      - support_count
+
+  EdgeProvenanceFields:
+    mixin: true
+    class_uri: prov:Entity
+    description: Provenance mixin for edges
+    slots:
+      - rel_id
+      - prov_system
+      - prov_channel_ids
+      - prov_thread_tss
+      - prov_tss
+      - prov_permalinks
+      - prov_file_ids
+      - prov_rev_ids
+      - prov_text_sha1s
+      - doco_types
+      - doco_paths
+      - page_nums
+      - derived
+      - derivation_rule
+      - support_count
