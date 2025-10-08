@@ -1,0 +1,44 @@
+# FastAPI Backend Dependencies
+# Python 3.11+ required
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# AI/ML
+anthropic==0.18.1          # Claude SDK with streaming
+instructor==0.6.8          # Structured LLM outputs
+openai>=1.38.0            # For Graphiti (compatible with graphiti-core 0.3.0)
+
+# Pydantic & Validation (compatible with graphiti-core 0.3.0)
+pydantic>=2.8.2
+pydantic-settings>=2.3.0
+
+# LinkML (already installed in main project)
+# linkml==1.7.0  # Use from parent directory
+
+# Graphiti (Neo4j Knowledge Graph)
+graphiti-core==0.3.0
+
+# Neo4j (version compatible with graphiti-core 0.3.0)
+neo4j>=5.23.0
+
+# YAML Processing
+pyyaml==6.0.1
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# CORS
+fastapi-cors==0.0.6
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+httpx==0.26.0             # For testing FastAPI
+
+# Development
+black==24.1.1             # Code formatting
+ruff==0.1.14              # Linting
+mypy==1.8.0               # Type checking

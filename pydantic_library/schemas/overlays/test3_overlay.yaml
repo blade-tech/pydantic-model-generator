@@ -1,0 +1,686 @@
+id: https://spec.edmcouncil.org/outcomes/murabaha-shariah-compliance-audit
+name: murabaha_shariah_compliance_audit
+description: |
+  Audit framework for Murabaha (Islamic cost-plus financing) transactions ensuring 
+  Shariah compliance through verification of asset ownership, profit transparency, 
+  payment terms adherence, and comprehensive audit trail maintenance.
+imports:
+  - ../core/provenance
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+  fibo-fbc-pas: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/
+  fibo-fbc-fse: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/FinancialServicesEntities/
+  fibo-fnd-pty: https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Roles/
+  skos: http://www.w3.org/2004/02/skos/core#
+  murabaha: https://spec.edmcouncil.org/outcomes/murabaha-shariah-compliance-audit/
+default_prefix: murabaha
+
+classes:
+  MurabahaTransaction:
+    description: |
+      Islamic financing transaction where bank purchases asset and sells to customer 
+      at cost plus disclosed profit markup with deferred payment terms.
+    class_uri: fibo-fbc-pas:Transaction
+    mixins:
+      - ProvenanceFields
+    slots:
+      - transaction_id
+      - transaction_date
+      - cost_price
+      - profit_markup
+      - selling_price
+      - payment_terms
+      - involves_bank
+      - involves_customer
+      - involves_asset
+      - has_audit_trail
+      - has_compliance_status
+      - has_evidence
+    slot_usage:
+      transaction_id:
+        required: true
+        identifier: true
+      transaction_date:
+        required: true
+      cost_price:
+        required: true
+      profit_markup:
+        required: true
+      selling_price:
+        required: true
+      payment_terms:
+        required: true
+
+  Bank:
+    description: |
+      Financial institution acting as intermediary purchaser and seller in Murabaha
+    class_uri: fibo-fbc-fse:FinancialInstitution
+    mixins:
+      - ProvenanceFields
+    slots:
+      - institution_id
+      - institution_name
+      - shariah_board_certified
+      - participates_in_transaction
+      - owns_asset
+      - transfers_ownership
+    slot_usage:
+      institution_id:
+        required: true
+        identifier: true
+      institution_name:
+        required: true
+      shariah_board_certified:
+        required: true
+
+  Customer:
+    description: |
+      Party purchasing asset from bank under Murabaha arrangement
+    class_uri: fibo-fnd-pty:PartyInRole
+    mixins:
+      - ProvenanceFields
+    slots:
+      - customer_id
+      - customer_name
+      - disclosure_acknowledged
+      - participates_in_transaction
+      - receives_ownership
+      - makes_payment
+    slot_usage:
+      customer_id:
+        required: true
+        identifier: true
+      customer_name:
+        required: true
+      disclosure_acknowledged:
+        required: true
+
+  Asset:
+    description: |
+      Physical or financial asset being traded in Murabaha transaction
+    class_uri: fibo-fbc-pas:FinancialAsset
+    mixins:
+      - ProvenanceFields
+    slots:
+      - asset_id
+      - asset_description
+      - asset_type
+      - shariah_compliant
+      - subject_of_transaction
+      - owned_by
+      - transferred_in
+    slot_usage:
+      asset_id:
+        required: true
+        identifier: true
+      asset_description:
+        required: true
+      asset_type:
+        required: true
+      shariah_compliant:
+        required: true
+
+  OwnershipTransfer:
+    description: |
+      Event recording transfer of asset ownership between parties
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - transfer_id
+      - transfer_timestamp
+      - from_party
+      - to_party
+      - transfer_type
+      - transfers_asset
+      - part_of_transaction
+      - evidenced_by
+      - precedes_transfer
+      - follows_transfer
+    slot_usage:
+      transfer_id:
+        required: true
+        identifier: true
+      transfer_timestamp:
+        required: true
+      from_party:
+        required: true
+      to_party:
+        required: true
+      transfer_type:
+        required: true
+
+  AuditEvidence:
+    description: |
+      Documentation proving compliance with Shariah requirements
+    class_uri: prov:Entity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - evidence_id
+      - evidence_type
+      - document_reference
+      - collection_timestamp
+      - verified_by
+      - supports_compliance_check
+      - relates_to_transaction
+      - validates_ownership_transfer
+      - included_in_audit_trail
+    slot_usage:
+      evidence_id:
+        required: true
+        identifier: true
+      evidence_type:
+        required: true
+      document_reference:
+        required: true
+      collection_timestamp:
+        required: true
+      verified_by:
+        required: true
+
+  ComplianceStatus:
+    description: |
+      Classification of transaction compliance state
+    class_uri: skos:Concept
+    mixins:
+      - ProvenanceFields
+    slots:
+      - status_id
+      - status_value
+      - status_reason
+      - assessed_date
+      - assessed_by
+      - assigned_to_transaction
+      - based_on_evidence
+      - recorded_in_audit_trail
+    slot_usage:
+      status_id:
+        required: true
+        identifier: true
+      status_value:
+        required: true
+      status_reason:
+        required: true
+      assessed_date:
+        required: true
+      assessed_by:
+        required: true
+
+  AuditTrail:
+    description: |
+      Comprehensive provenance record of all compliance checks and evidence
+    class_uri: prov:Bundle
+    mixins:
+      - ProvenanceFields
+    slots:
+      - trail_id
+      - created_timestamp
+      - last_updated
+      - audit_stage
+      - tracks_transaction
+      - contains_evidence
+      - records_compliance_status
+      - documents_ownership_transfers
+    slot_usage:
+      trail_id:
+        required: true
+        identifier: true
+      created_timestamp:
+        required: true
+      last_updated:
+        required: true
+      audit_stage:
+        required: true
+
+slots:
+  # MurabahaTransaction slots
+  transaction_id:
+    description: Unique identifier for the Murabaha transaction
+    range: string
+    slot_uri: fibo-fbc-pas:hasTransactionIdentifier
+
+  transaction_date:
+    description: Date when the transaction was executed
+    range: datetime
+    slot_uri: fibo-fbc-pas:hasTransactionDate
+
+  cost_price:
+    description: Original cost price of the asset to the bank
+    range: decimal
+    slot_uri: murabaha:hasCostPrice
+
+  profit_markup:
+    description: Profit markup amount added to cost price
+    range: decimal
+    slot_uri: murabaha:hasProfitMarkup
+
+  selling_price:
+    description: Total selling price (cost + profit markup)
+    range: decimal
+    slot_uri: murabaha:hasSellingPrice
+
+  payment_terms:
+    description: Terms and conditions for payment including schedule
+    range: string
+    slot_uri: murabaha:hasPaymentTerms
+
+  # Bank slots
+  institution_id:
+    description: Unique identifier for the financial institution
+    range: string
+    slot_uri: fibo-fbc-fse:hasInstitutionIdentifier
+
+  institution_name:
+    description: Legal name of the financial institution
+    range: string
+    slot_uri: fibo-fbc-fse:hasInstitutionName
+
+  shariah_board_certified:
+    description: Whether institution is certified by Shariah supervisory board
+    range: boolean
+    slot_uri: murabaha:hasShariahBoardCertification
+
+  # Customer slots
+  customer_id:
+    description: Unique identifier for the customer
+    range: string
+    slot_uri: fibo-fnd-pty:hasPartyIdentifier
+
+  customer_name:
+    description: Name of the customer party
+    range: string
+    slot_uri: fibo-fnd-pty:hasPartyName
+
+  disclosure_acknowledged:
+    description: Whether customer acknowledged profit disclosure
+    range: boolean
+    slot_uri: murabaha:hasDisclosureAcknowledgment
+
+  # Asset slots
+  asset_id:
+    description: Unique identifier for the asset
+    range: string
+    slot_uri: fibo-fbc-pas:hasAssetIdentifier
+
+  asset_description:
+    description: Detailed description of the asset
+    range: string
+    slot_uri: fibo-fbc-pas:hasAssetDescription
+
+  asset_type:
+    description: Classification type of the asset
+    range: string
+    slot_uri: fibo-fbc-pas:hasAssetType
+
+  shariah_compliant:
+    description: Whether asset meets Shariah compliance requirements
+    range: boolean
+    slot_uri: murabaha:isShariahCompliant
+
+  # OwnershipTransfer slots
+  transfer_id:
+    description: Unique identifier for the ownership transfer
+    range: string
+    slot_uri: prov:identifier
+
+  transfer_timestamp:
+    description: Timestamp when ownership transfer occurred
+    range: datetime
+    slot_uri: prov:atTime
+
+  from_party:
+    description: Party transferring ownership
+    range: string
+    slot_uri: murabaha:hasTransferFromParty
+
+  to_party:
+    description: Party receiving ownership
+    range: string
+    slot_uri: murabaha:hasTransferToParty
+
+  transfer_type:
+    description: Type of ownership transfer (purchase, sale, etc.)
+    range: string
+    slot_uri: murabaha:hasTransferType
+
+  # AuditEvidence slots
+  evidence_id:
+    description: Unique identifier for the audit evidence
+    range: string
+    slot_uri: prov:identifier
+
+  evidence_type:
+    description: Type of evidence (disclosure, ownership proof, etc.)
+    range: string
+    slot_uri: murabaha:hasEvidenceType
+
+  document_reference:
+    description: Reference to supporting documentation
+    range: string
+    slot_uri: murabaha:hasDocumentReference
+
+  collection_timestamp:
+    description: When the evidence was collected
+    range: datetime
+    slot_uri: prov:generatedAtTime
+
+  verified_by:
+    description: Person or system that verified the evidence
+    range: string
+    slot_uri: prov:wasAttributedTo
+
+  # ComplianceStatus slots
+  status_id:
+    description: Unique identifier for the compliance status
+    range: string
+    slot_uri: skos:notation
+
+  status_value:
+    description: Compliance status value (COMPLIANT, NON_COMPLIANT, etc.)
+    range: ComplianceStatusEnum
+    slot_uri: skos:prefLabel
+
+  status_reason:
+    description: Reason or explanation for the compliance status
+    range: string
+    slot_uri: skos:definition
+
+  assessed_date:
+    description: Date when compliance was assessed
+    range: datetime
+    slot_uri: murabaha:hasAssessmentDate
+
+  assessed_by:
+    description: Auditor who assessed compliance
+    range: string
+    slot_uri: prov:wasAttributedTo
+
+  # AuditTrail slots
+  trail_id:
+    description: Unique identifier for the audit trail
+    range: string
+    slot_uri: prov:identifier
+
+  created_timestamp:
+    description: When the audit trail was created
+    range: datetime
+    slot_uri: prov:generatedAtTime
+
+  last_updated:
+    description: When the audit trail was last updated
+    range: datetime
+    slot_uri: murabaha:lastUpdated
+
+  audit_stage:
+    description: Current stage of the audit process
+    range: string
+    slot_uri: murabaha:hasAuditStage
+
+  # Relationship slots - MurabahaTransaction
+  involves_bank:
+    description: Bank participating in the transaction
+    range: Bank
+    slot_uri: murabaha:involvesBank
+    multivalued: false
+
+  involves_customer:
+    description: Customer participating in the transaction
+    range: Customer
+    slot_uri: murabaha:involvesCustomer
+    multivalued: false
+
+  involves_asset:
+    description: Asset being transacted
+    range: Asset
+    slot_uri: murabaha:involvesAsset
+    multivalued: false
+
+  has_audit_trail:
+    description: Audit trail tracking this transaction
+    range: AuditTrail
+    slot_uri: murabaha:hasAuditTrail
+    multivalued: false
+
+  has_compliance_status:
+    description: Compliance status of the transaction
+    range: ComplianceStatus
+    slot_uri: murabaha:hasComplianceStatus
+    multivalued: false
+
+  has_evidence:
+    description: Evidence supporting transaction compliance
+    range: AuditEvidence
+    slot_uri: murabaha:hasEvidence
+    multivalued: true
+
+  # Relationship slots - Bank
+  participates_in_transaction:
+    description: Transaction the bank participates in
+    range: MurabahaTransaction
+    slot_uri: murabaha:participatesInTransaction
+    multivalued: true
+    inverse: involves_bank
+
+  owns_asset:
+    description: Asset owned by the bank
+    range: Asset
+    slot_uri: murabaha:ownsAsset
+    multivalued: true
+
+  transfers_ownership:
+    description: Ownership transfers executed by the bank
+    range: OwnershipTransfer
+    slot_uri: murabaha:transfersOwnership
+    multivalued: true
+
+  # Relationship slots - Customer
+  receives_ownership:
+    description: Ownership transfers received by customer
+    range: OwnershipTransfer
+    slot_uri: murabaha:receivesOwnership
+    multivalued: true
+
+  makes_payment:
+    description: Payments made by customer
+    range: string
+    slot_uri: murabaha:makesPayment
+    multivalued: true
+
+  # Relationship slots - Asset
+  subject_of_transaction:
+    description: Transaction where asset is the subject
+    range: MurabahaTransaction
+    slot_uri: murabaha:subjectOfTransaction
+    multivalued: true
+    inverse: involves_asset
+
+  owned_by:
+    description: Current owner of the asset
+    range: string
+    slot_uri: murabaha:ownedBy
+    multivalued: false
+
+  transferred_in:
+    description: Ownership transfers involving this asset
+    range: OwnershipTransfer
+    slot_uri: murabaha:transferredIn
+    multivalued: true
+
+  # Relationship slots - OwnershipTransfer
+  transfers_asset:
+    description: Asset being transferred
+    range: Asset
+    slot_uri: murabaha:transfersAsset
+    multivalued: false
+    inverse: transferred_in
+
+  part_of_transaction:
+    description: Transaction this transfer is part of
+    range: MurabahaTransaction
+    slot_uri: murabaha:partOfTransaction
+    multivalued: false
+
+  evidenced_by:
+    description: Evidence supporting this transfer
+    range: AuditEvidence
+    slot_uri: prov:wasGeneratedBy
+    multivalued: true
+
+  precedes_transfer:
+    description: Transfer that follows this one in sequence
+    range: OwnershipTransfer
+    slot_uri: prov:wasDerivedFrom
+    multivalued: true
+
+  follows_transfer:
+    description: Transfer that precedes this one in sequence
+    range: OwnershipTransfer
+    slot_uri: prov:wasRevisionOf
+    multivalued: true
+
+  # Relationship slots - AuditEvidence
+  supports_compliance_check:
+    description: Compliance status this evidence supports
+    range: ComplianceStatus
+    slot_uri: murabaha:supportsComplianceCheck
+    multivalued: true
+
+  relates_to_transaction:
+    description: Transaction this evidence relates to
+    range: MurabahaTransaction
+    slot_uri: murabaha:relatesToTransaction
+    multivalued: false
+    inverse: has_evidence
+
+  validates_ownership_transfer:
+    description: Ownership transfer this evidence validates
+    range: OwnershipTransfer
+    slot_uri: murabaha:validatesOwnershipTransfer
+    multivalued: true
+    inverse: evidenced_by
+
+  included_in_audit_trail:
+    description: Audit trail containing this evidence
+    range: AuditTrail
+    slot_uri: murabaha:includedInAuditTrail
+    multivalued: false
+
+  # Relationship slots - ComplianceStatus
+  assigned_to_transaction:
+    description: Transaction assigned this status
+    range: MurabahaTransaction
+    slot_uri: murabaha:assignedToTransaction
+    multivalued: false
+    inverse: has_compliance_status
+
+  based_on_evidence:
+    description: Evidence supporting this compliance status
+    range: AuditEvidence
+    slot_uri: murabaha:basedOnEvidence
+    multivalued: true
+    inverse: supports_compliance_check
+
+  recorded_in_audit_trail:
+    description: Audit trail recording this status
+    range: AuditTrail
+    slot_uri: murabaha:recordedInAuditTrail
+    multivalued: false
+
+  # Relationship slots - AuditTrail
+  tracks_transaction:
+    description: Transaction being tracked by this audit trail
+    range: MurabahaTransaction
+    slot_uri: murabaha:tracksTransaction
+    multivalued: false
+    inverse: has_audit_trail
+
+  contains_evidence:
+    description: Evidence contained in this audit trail
+    range: AuditEvidence
+    slot_uri: murabaha:containsEvidence
+    multivalued: true
+    inverse: included_in_audit_trail
+
+  records_compliance_status:
+    description: Compliance statuses recorded in this trail
+    range: ComplianceStatus
+    slot_uri: murabaha:recordsComplianceStatus
+    multivalued: true
+    inverse: recorded_in_audit_trail
+
+  documents_ownership_transfers:
+    description: Ownership transfers documented in this trail
+    range: OwnershipTransfer
+    slot_uri: murabaha:documentsOwnershipTransfers
+    multivalued: true
+
+enums:
+  ComplianceStatusEnum:
+    description: Enumeration of possible compliance status values
+    permissible_values:
+      COMPLIANT:
+        description: Transaction meets all Shariah compliance requirements
+      NON_COMPLIANT:
+        description: Transaction fails Shariah compliance requirements
+      APPROVED:
+        description: Transaction approved by Shariah board
+      REJECTED:
+        description: Transaction rejected by Shariah board
+      REQUIRES_REVIEW:
+        description: Transaction requires additional review
+      PENDING:
+        description: Compliance assessment pending
+      REMEDIATED:
+        description: Previously non-compliant transaction has been corrected
+
+  EvidenceTypeEnum:
+    description: Types of audit evidence
+    permissible_values:
+      PROFIT_DISCLOSURE:
+        description: Evidence of profit markup disclosure to customer
+      OWNERSHIP_PROOF:
+        description: Proof of asset ownership by bank
+      PAYMENT_TERMS_REVIEW:
+        description: Review of payment terms for Shariah compliance
+      ASSET_VALUATION:
+        description: Independent asset valuation documentation
+      CUSTOMER_ACKNOWLEDGMENT:
+        description: Customer acknowledgment of terms
+      SHARIAH_BOARD_APPROVAL:
+        description: Shariah supervisory board approval
+      TRANSFER_DOCUMENTATION:
+        description: Documentation of ownership transfer
+
+  TransferTypeEnum:
+    description: Types of ownership transfers
+    permissible_values:
+      PURCHASE:
+        description: Bank purchasing asset from original seller
+      SALE:
+        description: Bank selling asset to customer
+      INITIAL_ACQUISITION:
+        description: Initial acquisition by original seller
+      RETURN:
+        description: Asset returned due to defect or non-compliance
+
+  AuditStageEnum:
+    description: Stages in the audit process
+    permissible_values:
+      INITIATED:
+        description: Audit trail initiated
+      EVIDENCE_COLLECTION:
+        description: Collecting audit evidence
+      OWNERSHIP_VERIFICATION:
+        description: Verifying ownership chain
+      PRICING_REVIEW:
+        description: Reviewing profit disclosure and pricing
+      TERMS_ANALYSIS:
+        description: Analyzing payment terms for compliance
+      FINAL_ASSESSMENT:
+        description: Final compliance assessment
+      COMPLETED:
+        description: Audit completed
+      REMEDIATION:
+        description: Addressing non-compliance issues

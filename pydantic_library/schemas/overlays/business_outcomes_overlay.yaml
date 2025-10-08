@@ -1,0 +1,242 @@
+id: https://example.org/overlays/business-outcomes
+name: business_outcomes_overlay
+description: |
+  Business outcomes tracking overlay - minimal entity set for outcome-driven validation.
+
+  Driven by: specs/business_outcomes_tracking.yaml
+
+  Core question: "What business outcomes are we tracking, what blocks them, and who is responsible?"
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+  bfo: http://purl.obolibrary.org/obo/BFO_
+  iao: http://purl.obolibrary.org/obo/IAO_
+
+default_prefix: business
+
+imports:
+  - ../core/provenance
+  - ../core/types
+  - ../shared/identity
+
+default_range: string
+
+# ==================================================================
+# ENTITY SLOTS
+# ==================================================================
+
+slots:
+  # Common slots
+  name:
+    range: string
+    description: Name or title
+
+  status:
+    range: string
+    description: Current status
+
+  priority:
+    range: string
+    description: Priority level (critical, high, medium, low)
+
+  owner:
+    range: string
+    description: Owner name
+
+  due_date:
+    range: date
+    description: Due or target date
+
+  actual_completion:
+    range: date
+    description: Actual completion date
+
+  completion_confidence:
+    range: Confidence01
+    description: Confidence in completion estimate
+
+  # BusinessDecision slots
+  decision_type:
+    range: string
+    description: Type of decision (strategic, tactical, operational)
+
+  decision_date:
+    range: date
+    description: When decision was made
+
+  rationale:
+    range: string
+    description: Decision rationale or reasoning
+
+  # BusinessTask slots
+  task_type:
+    range: string
+    description: Type of task
+
+  estimated_effort:
+    range: float
+    description: Estimated effort in hours
+    minimum_value: 0
+
+  actual_effort:
+    range: float
+    description: Actual effort in hours
+    minimum_value: 0
+
+  # BusinessHandoff slots
+  handoff_status:
+    range: string
+    description: Handoff status (pending, in-progress, completed, blocked)
+
+  from_party:
+    range: string
+    description: Source party of handoff
+
+  to_party:
+    range: string
+    description: Target party of handoff
+
+  expected_date:
+    range: date
+    description: Expected handoff date
+
+  actual_date:
+    range: date
+    description: Actual handoff date
+
+  # Edge-specific slots
+  blocking_reason:
+    range: string
+    description: Reason for blocking relationship
+
+  impact_level:
+    range: string
+    description: Impact level (critical, high, medium, low)
+
+  fulfillment_confidence:
+    range: Confidence01
+    description: Confidence that decision fulfills outcome
+
+  assignment_date:
+    range: date
+    description: When task was assigned
+
+  role_type:
+    range: string
+    description: Type of responsibility or role
+
+# ==================================================================
+# CLASSES (5 entities + 6 edges)
+# ==================================================================
+
+classes:
+  # Entity classes
+  BusinessOutcome:
+    description: A business outcome or objective to track
+    class_uri: bfo:BFO_0000015  # BFO Process
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - status
+      - priority
+      - owner
+      - due_date
+      - actual_completion
+      - completion_confidence
+
+  BusinessDecision:
+    description: A decision that blocks or enables outcomes
+    class_uri: iao:IAO_0000033  # IAO Directive Information Entity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - decision_type
+      - decision_date
+      - status
+      - owner
+      - rationale
+
+  BusinessTask:
+    description: A concrete task required to deliver outcomes
+    class_uri: bfo:BFO_0000015  # BFO Process
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - task_type
+      - status
+      - priority
+      - estimated_effort
+      - actual_effort
+      - due_date
+      - actual_completion
+
+  BusinessHandoff:
+    description: A handoff between parties that must be tracked
+    class_uri: bfo:BFO_0000015  # BFO Process
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - handoff_status
+      - from_party
+      - to_party
+      - expected_date
+      - actual_date
+      - priority
+
+  # Edge classes
+  BlockedBy:
+    description: Outcome blocked by a decision
+    class_uri: prov:wasDerivedFrom
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - blocking_reason
+      - impact_level
+
+  Fulfills:
+    description: Decision fulfills or enables outcome
+    class_uri: prov:wasDerivedFrom
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - fulfillment_confidence
+      - impact_level
+
+  Requires:
+    description: Outcome requires task
+    class_uri: prov:wasDerivedFrom
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - priority
+
+  AssignedTo:
+    description: Task assigned to actor
+    class_uri: prov:wasAttributedTo
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - assignment_date
+      - role_type
+
+  ResponsibleFor:
+    description: Actor responsible for outcome
+    class_uri: prov:wasAttributedTo
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - role_type
+
+  Transfers:
+    description: Handoff transfers from one party to another
+    class_uri: prov:wasAttributedTo
+    mixins:
+      - EdgeProvenanceFields
+    slots:
+      - expected_date
+      - actual_date

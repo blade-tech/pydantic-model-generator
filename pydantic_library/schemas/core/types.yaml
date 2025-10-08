@@ -1,0 +1,29 @@
+id: https://example.org/core/types
+name: core_types
+description: Core custom types for validation
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: core
+
+types:
+  Email:
+    base: str
+    uri: xsd:string
+    pattern: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+    description: Email address with basic validation
+
+  E164Phone:
+    base: str
+    uri: xsd:string
+    pattern: '^\+?[1-9]\d{7,15}$'
+    description: E.164 phone number format (international)
+
+  Confidence01:
+    base: float
+    uri: xsd:float
+    minimum_value: 0
+    maximum_value: 1
+    description: Confidence score between 0 and 1

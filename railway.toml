@@ -1,0 +1,36 @@
+# Railway Multi-Service Configuration
+# Pydantic Model Generator - Outcome-First AI Pipeline
+
+# ============================================================================
+# Backend Service (FastAPI + Python)
+# ============================================================================
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/health"
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 10
+
+# ============================================================================
+# Environment Variables (Set in Railway Dashboard)
+# ============================================================================
+# Required for Backend:
+# - ANTHROPIC_API_KEY (user provides)
+# - OPENAI_API_KEY (user provides)
+# - NEO4J_URI (from Railway Neo4j addon)
+# - NEO4J_USER (from Railway Neo4j addon)
+# - NEO4J_PASSWORD (from Railway Neo4j addon)
+# - PYDANTIC_LIBRARY_PATH=../pydantic_library
+# - CORS_ORIGINS (set to Railway frontend URL)
+# - CLAUDE_MODEL=claude-3-5-sonnet-20241022
+# - CLAUDE_MAX_TOKENS=16384
+# - CLAUDE_TEMPERATURE=0.7
+# - LOG_LEVEL=INFO
+# - DEBUG=false
+# - API_HOST=0.0.0.0
+# - API_PORT=$PORT
+
+# Required for Frontend:
+# - NEXT_PUBLIC_API_URL (set to Railway backend URL)

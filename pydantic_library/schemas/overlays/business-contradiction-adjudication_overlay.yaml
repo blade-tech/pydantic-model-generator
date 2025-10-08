@@ -1,0 +1,525 @@
+id: https://example.org/schemas/business-contradiction-adjudication
+name: business_contradiction_adjudication
+description: Schema for surfacing and tracking business contradictions to enable proper adjudication and resolution of conflicting constraints, policies, and rules
+imports:
+  - ../core/provenance
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+  skos: http://www.w3.org/2004/02/skos/core#
+  bca: https://example.org/schemas/business-contradiction-adjudication/
+default_prefix: bca
+
+classes:
+  Contradiction:
+    description: A business contradiction representing conflicting constraints, policies, or rules that require adjudication
+    class_uri: skos:Concept
+    mixins:
+      - ProvenanceFields
+    slots:
+      - contradiction_id
+      - description
+      - severity
+      - status
+      - detected_at
+      - resolution_deadline
+      - impact_assessment
+      - has_conflict
+      - supported_by
+      - adjudicated_by
+    slot_usage:
+      contradiction_id:
+        required: true
+        identifier: true
+      severity:
+        required: true
+      status:
+        required: true
+      detected_at:
+        required: true
+
+  BusinessConstraint:
+    description: A business rule, policy, or constraint that may conflict with other constraints
+    class_uri: prov:Entity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - constraint_id
+      - name
+      - constraint_type
+      - rule
+      - scope
+      - priority
+      - owner
+      - effective_date
+      - expiration_date
+      - conflicts_with
+    slot_usage:
+      constraint_id:
+        required: true
+        identifier: true
+      name:
+        required: true
+      constraint_type:
+        required: true
+      rule:
+        required: true
+
+  ContradictionEvidence:
+    description: Evidence supporting the existence of a contradiction, including source data and confidence metrics
+    class_uri: prov:Entity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - evidence_id
+      - description
+      - source
+      - captured_at
+      - confidence_score
+      - evidence_type
+      - raw_data
+      - supports_contradiction
+    slot_usage:
+      evidence_id:
+        required: true
+        identifier: true
+      source:
+        required: true
+      captured_at:
+        required: true
+
+  AdjudicationActivity:
+    description: The process of reviewing and making decisions about contradictions
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - activity_id
+      - status
+      - started_at
+      - completed_at
+      - priority
+      - notes
+      - adjudicates
+      - performed_by
+      - resulted_in
+    slot_usage:
+      activity_id:
+        required: true
+        identifier: true
+      status:
+        required: true
+      started_at:
+        required: true
+
+  Adjudicator:
+    description: An agent (person or system) responsible for adjudicating contradictions
+    class_uri: prov:Agent
+    mixins:
+      - ProvenanceFields
+    slots:
+      - adjudicator_id
+      - name
+      - role
+      - department
+      - authority_level
+      - contact_info
+      - specialization
+      - performs_adjudication
+    slot_usage:
+      adjudicator_id:
+        required: true
+        identifier: true
+      name:
+        required: true
+      role:
+        required: true
+
+  AdjudicationDecision:
+    description: The outcome and rationale of an adjudication activity
+    class_uri: prov:Entity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - decision_id
+      - decision
+      - rationale
+      - decided_at
+      - implementation_plan
+      - affected_constraints
+      - approval_status
+      - review_date
+      - result_of_activity
+    slot_usage:
+      decision_id:
+        required: true
+        identifier: true
+      decision:
+        required: true
+      rationale:
+        required: true
+      decided_at:
+        required: true
+
+  ConflictRelationship:
+    description: A semantic relationship indicating conflict between business constraints
+    class_uri: skos:semanticRelation
+    mixins:
+      - ProvenanceFields
+    slots:
+      - relationship_id
+      - conflict_type
+      - conflict_severity
+      - identified_at
+      - resolution_approach
+      - source_constraint
+      - target_constraint
+    slot_usage:
+      relationship_id:
+        required: true
+        identifier: true
+      conflict_type:
+        required: true
+      source_constraint:
+        required: true
+      target_constraint:
+        required: true
+
+slots:
+  # Contradiction slots
+  contradiction_id:
+    description: Unique identifier for the contradiction
+    range: string
+    identifier: true
+
+  description:
+    description: Detailed description of the entity
+    range: string
+
+  severity:
+    description: Severity level of the contradiction
+    range: SeverityEnum
+
+  status:
+    description: Current status of the contradiction or activity
+    range: string
+
+  detected_at:
+    description: Timestamp when the contradiction was detected
+    range: datetime
+
+  resolution_deadline:
+    description: Target date for resolving the contradiction
+    range: datetime
+
+  impact_assessment:
+    description: Assessment of business impact if contradiction is not resolved
+    range: string
+
+  # BusinessConstraint slots
+  constraint_id:
+    description: Unique identifier for the business constraint
+    range: string
+    identifier: true
+
+  name:
+    description: Name of the constraint or entity
+    range: string
+
+  constraint_type:
+    description: Type or category of the constraint
+    range: ConstraintTypeEnum
+
+  rule:
+    description: The actual rule or constraint definition
+    range: string
+
+  scope:
+    description: Scope or domain where the constraint applies
+    range: string
+
+  priority:
+    description: Priority level for the constraint or activity
+    range: integer
+
+  owner:
+    description: Owner or responsible party for the constraint
+    range: string
+
+  effective_date:
+    description: Date when the constraint becomes effective
+    range: datetime
+
+  expiration_date:
+    description: Date when the constraint expires
+    range: datetime
+
+  # ContradictionEvidence slots
+  evidence_id:
+    description: Unique identifier for the evidence
+    range: string
+    identifier: true
+
+  source:
+    description: Source system or origin of the evidence
+    range: string
+
+  captured_at:
+    description: Timestamp when the evidence was captured
+    range: datetime
+
+  confidence_score:
+    description: Confidence score for the evidence validity
+    range: float
+    minimum_value: 0.0
+    maximum_value: 1.0
+
+  evidence_type:
+    description: Type of evidence
+    range: EvidenceTypeEnum
+
+  raw_data:
+    description: Raw data supporting the evidence
+    range: string
+
+  # AdjudicationActivity slots
+  activity_id:
+    description: Unique identifier for the adjudication activity
+    range: string
+    identifier: true
+
+  started_at:
+    description: Timestamp when the activity started
+    range: datetime
+
+  completed_at:
+    description: Timestamp when the activity completed
+    range: datetime
+
+  notes:
+    description: Additional notes or comments
+    range: string
+
+  # Adjudicator slots
+  adjudicator_id:
+    description: Unique identifier for the adjudicator
+    range: string
+    identifier: true
+
+  role:
+    description: Role or title of the adjudicator
+    range: string
+
+  department:
+    description: Department or organizational unit
+    range: string
+
+  authority_level:
+    description: Level of authority for making decisions
+    range: integer
+
+  contact_info:
+    description: Contact information for the adjudicator
+    range: string
+
+  specialization:
+    description: Area of specialization or expertise
+    range: string
+
+  # AdjudicationDecision slots
+  decision_id:
+    description: Unique identifier for the decision
+    range: string
+    identifier: true
+
+  decision:
+    description: The actual decision made
+    range: DecisionEnum
+
+  rationale:
+    description: Rationale or reasoning behind the decision
+    range: string
+
+  decided_at:
+    description: Timestamp when the decision was made
+    range: datetime
+
+  implementation_plan:
+    description: Plan for implementing the decision
+    range: string
+
+  affected_constraints:
+    description: List of constraints affected by the decision
+    range: string
+    multivalued: true
+
+  approval_status:
+    description: Approval status of the decision
+    range: ApprovalStatusEnum
+
+  review_date:
+    description: Date when the decision should be reviewed
+    range: datetime
+
+  # ConflictRelationship slots
+  relationship_id:
+    description: Unique identifier for the conflict relationship
+    range: string
+    identifier: true
+
+  conflict_type:
+    description: Type of conflict between constraints
+    range: ConflictTypeEnum
+
+  conflict_severity:
+    description: Severity of the conflict
+    range: SeverityEnum
+
+  identified_at:
+    description: Timestamp when the conflict was identified
+    range: datetime
+
+  resolution_approach:
+    description: Proposed approach for resolving the conflict
+    range: string
+
+  # Relationship slots
+  has_conflict:
+    description: Links a contradiction to conflicting business constraints
+    range: BusinessConstraint
+    multivalued: true
+
+  supported_by:
+    description: Links a contradiction to supporting evidence
+    range: ContradictionEvidence
+    multivalued: true
+
+  adjudicated_by:
+    description: Links a contradiction to adjudication activities
+    range: AdjudicationActivity
+    multivalued: true
+    inverse: adjudicates
+
+  adjudicates:
+    description: Links an adjudication activity to the contradiction being adjudicated
+    range: Contradiction
+
+  performed_by:
+    description: Links an activity to the adjudicator performing it
+    range: Adjudicator
+    inverse: performs_adjudication
+
+  performs_adjudication:
+    description: Links an adjudicator to activities they perform
+    range: AdjudicationActivity
+    multivalued: true
+
+  resulted_in:
+    description: Links an activity to the resulting decision
+    range: AdjudicationDecision
+    inverse: result_of_activity
+
+  result_of_activity:
+    description: Links a decision to the activity that produced it
+    range: AdjudicationActivity
+
+  supports_contradiction:
+    description: Links evidence to the contradiction it supports
+    range: Contradiction
+    inverse: supported_by
+
+  conflicts_with:
+    description: Links a constraint to other conflicting constraints
+    range: BusinessConstraint
+    multivalued: true
+
+  source_constraint:
+    description: The source constraint in a conflict relationship
+    range: BusinessConstraint
+
+  target_constraint:
+    description: The target constraint in a conflict relationship
+    range: BusinessConstraint
+
+enums:
+  SeverityEnum:
+    description: Severity levels for contradictions and conflicts
+    permissible_values:
+      critical:
+        description: Critical severity requiring immediate attention
+      high:
+        description: High severity requiring prompt attention
+      medium:
+        description: Medium severity
+      low:
+        description: Low severity
+
+  ConstraintTypeEnum:
+    description: Types of business constraints
+    permissible_values:
+      policy:
+        description: Business policy constraint
+      rule:
+        description: Business rule constraint
+      regulation:
+        description: Regulatory constraint
+      guideline:
+        description: Guideline or best practice
+      standard:
+        description: Industry or organizational standard
+
+  EvidenceTypeEnum:
+    description: Types of contradiction evidence
+    permissible_values:
+      system_log:
+        description: Evidence from system logs
+      data_analysis:
+        description: Evidence from data analysis
+      user_report:
+        description: Evidence from user reports
+      automated_detection:
+        description: Evidence from automated detection
+      manual_review:
+        description: Evidence from manual review
+
+  DecisionEnum:
+    description: Types of adjudication decisions
+    permissible_values:
+      accept_constraint_a:
+        description: Accept first constraint, reject conflicting constraint
+      accept_constraint_b:
+        description: Accept second constraint, reject conflicting constraint
+      modify_both:
+        description: Modify both constraints to resolve conflict
+      escalate:
+        description: Escalate to higher authority
+      defer:
+        description: Defer decision pending additional information
+      create_exception:
+        description: Create exception rule to handle both constraints
+
+  ApprovalStatusEnum:
+    description: Approval status for decisions
+    permissible_values:
+      pending:
+        description: Pending approval
+      approved:
+        description: Approved
+      rejected:
+        description: Rejected
+      under_review:
+        description: Under review
+
+  ConflictTypeEnum:
+    description: Types of conflicts between constraints
+    permissible_values:
+      direct_contradiction:
+        description: Direct logical contradiction
+      mutual_exclusivity:
+        description: Mutually exclusive requirements
+      temporal_conflict:
+        description: Conflicting time-based requirements
+      scope_overlap:
+        description: Overlapping scopes with different rules
+      priority_conflict:
+        description: Conflicting priorities

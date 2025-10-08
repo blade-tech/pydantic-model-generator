@@ -1,0 +1,159 @@
+id: https://example.org/shared/identity
+name: shared_identity
+description: Shared identity entities used across multiple outcomes
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  foaf: http://xmlns.com/foaf/0.1/
+  org: http://www.w3.org/ns/org#
+  prov: http://www.w3.org/ns/prov#
+
+default_prefix: shared
+
+imports:
+  - ../core/provenance
+  - ../core/types
+
+default_range: string
+
+# ==================================================================
+# SHARED IDENTITY SLOTS
+# ==================================================================
+
+slots:
+  # Actor slots
+  name:
+    range: string
+    description: Full name
+    slot_uri: foaf:name
+
+  role:
+    range: string
+    description: Role or title
+
+  team:
+    range: string
+    description: Team name
+
+  department:
+    range: string
+    description: Department or business unit
+
+  email:
+    range: Email
+    description: Email address
+    slot_uri: foaf:mbox
+
+  phone:
+    range: E164Phone
+    description: Phone number
+
+  expertise:
+    range: string
+    multivalued: true
+    description: Areas of expertise or skills
+
+  availability:
+    range: string
+    description: Availability status or schedule
+
+  # Customer slots
+  industry:
+    range: string
+    description: Industry sector
+
+  size:
+    range: string
+    description: Organization size (small, medium, large, enterprise)
+
+  tier:
+    range: string
+    description: Customer tier or level
+
+  contract_value:
+    range: float
+    description: Total contract value
+    minimum_value: 0
+
+  start_date:
+    range: date
+    description: Customer relationship start date
+
+  account_manager:
+    range: string
+    description: Name of account manager
+
+  # Project slots
+  project_status:
+    range: string
+    description: Project status (active, completed, on-hold, cancelled)
+
+  project_start_date:
+    range: date
+    description: Project start date
+
+  project_end_date:
+    range: date
+    description: Project end date (actual or planned)
+
+  budget:
+    range: float
+    description: Project budget
+    minimum_value: 0
+
+  pm:
+    range: string
+    description: Project manager name
+
+  team_size:
+    range: integer
+    description: Number of team members
+    minimum_value: 0
+
+# ==================================================================
+# SHARED IDENTITY CLASSES
+# ==================================================================
+
+classes:
+  Actor:
+    description: Team member or stakeholder
+    class_uri: foaf:Agent
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - role
+      - team
+      - department
+      - email
+      - phone
+      - expertise
+      - availability
+
+  Customer:
+    description: Business customer or client
+    class_uri: org:Organization
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - industry
+      - size
+      - tier
+      - contract_value
+      - start_date
+      - account_manager
+
+  Project:
+    description: Business project
+    class_uri: prov:Activity
+    mixins:
+      - ProvenanceFields
+    slots:
+      - name
+      - project_status
+      - project_start_date
+      - project_end_date
+      - budget
+      - pm
+      - team_size
