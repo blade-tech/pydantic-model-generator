@@ -153,3 +153,4 @@ playwright/.cache/
 .tmp/
 *.bak
 *.swp
+RAILWAY_ENV_VARS.md
