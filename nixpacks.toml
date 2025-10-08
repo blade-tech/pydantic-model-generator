@@ -1,0 +1,17 @@
+# Nixpacks configuration for Railway deployment
+# This tells Nixpacks how to build our monorepo structure
+
+[phases.setup]
+nixPkgs = ['python313']
+
+[phases.install]
+# Install Python dependencies from backend
+cmds = ['cd backend && pip install -r requirements.txt']
+
+[phases.build]
+# Copy pydantic_library into backend for runtime access
+cmds = ['cp -r pydantic_library backend/pydantic_library']
+
+[start]
+# Start FastAPI from backend directory with pydantic_library available locally
+cmd = 'cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT'
