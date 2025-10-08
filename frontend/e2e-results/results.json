@@ -1,0 +1,153 @@
+{
+  "config": {
+    "configFile": "D:\\projects\\Pydantic Model Generator\\demo-app\\frontend\\playwright.config.ts",
+    "rootDir": "D:/projects/Pydantic Model Generator/demo-app/frontend/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "e2e-results/html"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "e2e-results/results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "D:/projects/Pydantic Model Generator/demo-app/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/projects/Pydantic Model Generator/demo-app/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 600000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "full-pipeline.spec.ts",
+      "file": "full-pipeline.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Prompt 1: Murabaha Audit Trail - Complete Pipeline",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 17217,
+                  "error": {
+                    "message": "Error: page.click: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Start Pipeline\")')\u001b[22m\n",
+                    "stack": "Error: page.click: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Start Pipeline\")')\u001b[22m\n\n    at D:\\projects\\Pydantic Model Generator\\demo-app\\frontend\\e2e\\full-pipeline.spec.ts:37:14",
+                    "location": {
+                      "file": "D:\\projects\\Pydantic Model Generator\\demo-app\\frontend\\e2e\\full-pipeline.spec.ts",
+                      "column": 14,
+                      "line": 37
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 35 |\u001b[39m \u001b[32mEach transaction must show full audit trail from initial purchase to final payment.\u001b[39m\n \u001b[90m 36 |\u001b[39m \u001b[32m`\u001b[39m\u001b[33m.\u001b[39mtrim())\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Start Pipeline\")'\u001b[39m)\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m\n \u001b[90m 39 |\u001b[39m   \u001b[90m// Wait for Step 2\u001b[39m\n \u001b[90m 40 |\u001b[39m   \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Step 2'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\projects\\Pydantic Model Generator\\demo-app\\frontend\\e2e\\full-pipeline.spec.ts",
+                        "column": 14,
+                        "line": 37
+                      },
+                      "message": "Error: page.click: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Start Pipeline\")')\u001b[22m\n\n\n  35 | Each transaction must show full audit trail from initial purchase to final payment.\n  36 | `.trim())\n> 37 |   await page.click('button:has-text(\"Start Pipeline\")')\n     |              ^\n  38 |\n  39 |   // Wait for Step 2\n  40 |   await expect(page.locator('text=Step 2')).toBeVisible({ timeout: 10000 })\n    at D:\\projects\\Pydantic Model Generator\\demo-app\\frontend\\e2e\\full-pipeline.spec.ts:37:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-10-07T12:11:31.824Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "D:\\projects\\Pydantic Model Generator\\demo-app\\frontend\\test-results\\full-pipeline-Prompt-1-Mur-b4d92-t-Trail---Complete-Pipeline-chromium\\video.webm"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\projects\\Pydantic Model Generator\\demo-app\\frontend\\e2e\\full-pipeline.spec.ts",
+                    "column": 14,
+                    "line": 37
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "d2f763f2cd923458e302-88de239488688f5fee75",
+          "file": "full-pipeline.spec.ts",
+          "line": 19,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-07T12:11:29.632Z",
+    "duration": 19718.843,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}
