@@ -63,16 +63,13 @@ git push -u origin main
 
 ### 2.3 Configure Backend Service
 
-#### Set Root Directory
-1. Click on **backend service** in Railway
-2. Go to "Settings" tab
-3. Scroll to "Root Directory"
-4. Enter: `backend`
-5. Click "Update"
+#### Important: No Root Directory Needed!
+The repository includes `nixpacks.toml` which automatically handles the monorepo structure. **Do NOT set a Root Directory** - leave it blank.
 
 #### Add Environment Variables
-1. Go to "Variables" tab
-2. Click "New Variable" for each:
+1. Click on **backend service** in Railway
+2. Go to "Variables" tab
+3. Click "New Variable" for each (refer to `RAILWAY_ENV_VARS.md` for actual values):
 
 ```env
 # AI API Keys
@@ -85,20 +82,21 @@ NEO4J_USER=${{Neo4j.NEO4J_USER}}
 NEO4J_PASSWORD=${{Neo4j.NEO4J_PASSWORD}}
 
 # Application Config
-PYDANTIC_LIBRARY_PATH=../pydantic_library
+PYDANTIC_LIBRARY_PATH=./pydantic_library
 CORS_ORIGINS=https://pydantic-model-generator-production.up.railway.app
-CLAUDE_MODEL=claude-3-5-sonnet-20241022
+CLAUDE_MODEL=claude-sonnet-4-5-20250929
 CLAUDE_MAX_TOKENS=16384
 CLAUDE_TEMPERATURE=0.7
 LOG_LEVEL=INFO
 DEBUG=false
 API_HOST=0.0.0.0
-API_PORT=$PORT
 ```
 
 **Important**:
-- Replace `[YOUR_KEY_HERE]` with actual API keys
+- Replace `[YOUR_KEY_HERE]` with actual API keys from `RAILWAY_ENV_VARS.md` (local file, not in repo)
 - The `CORS_ORIGINS` will be updated in Step 2.4
+- `PYDANTIC_LIBRARY_PATH` is set to `./pydantic_library` because nixpacks.toml copies it into backend during build
+- **Do NOT add `API_PORT`** - the port is handled by the start command
 
 ### 2.4 Configure Frontend Service
 
